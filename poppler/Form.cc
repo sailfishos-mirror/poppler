@@ -627,6 +627,8 @@ std::optional<CryptoSign::SigningErrorMessage> FormWidgetSignature::signDocument
 
     auto sigHandler = backend->createSigningHandler(certNickname, HashAlgorithm::Sha256);
 
+    const unsigned int maxExpectedSignatureSize = sigHandler->estimateSize();
+
     auto *signatureField = static_cast<FormFieldSignature *>(field);
     std::unique_ptr<X509CertificateInfo> certInfo = sigHandler->getCertificateInfo();
     if (!certInfo) {
@@ -639,7 +641,7 @@ std::optional<CryptoSign::SigningErrorMessage> FormWidgetSignature::signDocument
 
     Object vObj(std::make_unique<Dict>(xref));
     Ref vref = xref->addIndirectObject(vObj);
-    if (!createSignature(vObj, vref, GooString(signerName), CryptoSign::maxSupportedSignatureSize, reason, location, sigHandler->signatureType())) {
+    if (!createSignature(vObj, vref, GooString(signerName), maxExpectedSignatureSize, reason, location, sigHandler->signatureType())) {
         return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::InternalError, .message = ERROR_IN_CODE_LOCATION };
     }
 
@@ -683,14 +685,14 @@ std::optional<CryptoSign::SigningErrorMessage> FormWidgetSignature::signDocument
         return std::get<CryptoSign::SigningErrorMessage>(signature);
     }
 
-    if (std::get<std::vector<unsigned char>>(signature).size() > CryptoSign::maxSupportedSignatureSize) {
+    if (std::get<std::vector<unsigned char>>(signature).size() > maxExpectedSignatureSize) {
         error(errInternal, -1, "signature too large");
         fclose(file);
         return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::InternalError, .message = ERROR_IN_CODE_LOCATION };
     }
 
     // pad with zeroes to placeholder length
-    std::get<std::vector<unsigned char>>(signature).resize(CryptoSign::maxSupportedSignatureSize, '\0');
+    std::get<std::vector<unsigned char>>(signature).resize(maxExpectedSignatureSize, '\0');
 
     // write signature to saved file
     if (!updateSignature(file, sigStart, sigEnd, std::get<std::vector<unsigned char>>(signature))) {

@@ -36,6 +36,7 @@ public:
     std::unique_ptr<X509CertificateInfo> getCertificateInfo() const final;
     std::variant<std::vector<unsigned char>, CryptoSign::SigningErrorMessage> signDetached(const std::string &password) final;
     CryptoSign::SignatureType signatureType() const final;
+    unsigned int estimateSize() const final;
 
 private:
     std::unique_ptr<GpgME::Context> gpgContext;

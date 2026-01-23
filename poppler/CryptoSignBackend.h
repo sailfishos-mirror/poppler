@@ -41,7 +41,7 @@ std::string toStdString(SignatureType type);
 // experiments seems to say that this is a bit above
 // what we have seen in the wild, and much larger than
 // what we have managed to get nss and gpgme to create.
-static const int maxSupportedSignatureSize = 10000;
+static const int defaultMaxSignatureSize = 10000;
 
 enum class SigningError
 {
@@ -89,6 +89,7 @@ public:
     virtual SignatureType signatureType() const = 0;
     virtual std::unique_ptr<X509CertificateInfo> getCertificateInfo() const = 0;
     virtual std::variant<std::vector<unsigned char>, SigningErrorMessage> signDetached(const std::string &password) = 0;
+    virtual unsigned int estimateSize() const = 0;
     virtual ~SigningInterface();
     SigningInterface() = default;
     SigningInterface(const SigningInterface &other) = delete;

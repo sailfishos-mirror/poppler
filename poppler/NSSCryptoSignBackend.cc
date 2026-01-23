@@ -772,6 +772,40 @@ NSSSignatureCreation::NSSSignatureCreation(const std::string &certNickname, Hash
 {
     NSSSignatureConfiguration::setNSSDir({});
     signing_cert = CERT_FindCertByNickname(CERT_GetDefaultCertDB(), certNickname.c_str());
+
+    if (!signing_cert) {
+        return;
+    }
+
+    auto *chain = CERT_CertChainFromCert(signing_cert, certUsageEmailSigner, PR_FALSE);
+
+    if (!chain) {
+        return;
+    }
+
+    unsigned int chain_size = 0;
+    for (int i = 0; i < chain->len; i++) {
+        chain_size += chain->certs[i].len;
+    }
+    CERT_DestroyCertificateList(chain);
+
+    // fields present in all signatures
+    estimated_size = 300;
+
+    // SignedData.certificates
+    estimated_size += chain_size;
+
+    // SignerInfo.SignatureValue
+    estimated_size += signing_cert->derPublicKey.len;
+    if (SECOID_GetAlgorithmTag(&signing_cert->subjectPublicKeyInfo.algorithm) == SEC_OID_ANSIX962_EC_PUBLIC_KEY) {
+        estimated_size += signing_cert->derPublicKey.len;
+    }
+
+    // SignerInfo.SignerIdentifier.IssuerAndSerialNumber
+    estimated_size += signing_cert->derIssuer.len + signing_cert->serialNumber.len;
+
+    // ESSCertIDv2.IssuerSerial
+    estimated_size += signing_cert->derIssuer.len + signing_cert->serialNumber.len;
 }
 
 HashAlgorithm NSSSignatureVerification::getHashAlgorithm() const
@@ -792,6 +826,11 @@ void NSSSignatureVerification::addData(unsigned char *data_block, int data_len)
 void NSSSignatureCreation::addData(unsigned char *data_block, int data_len)
 {
     hashContext->updateHash(data_block, data_len);
+}
+
+unsigned int NSSSignatureCreation::estimateSize() const
+{
+    return estimated_size;
 }
 
 NSSSignatureCreation::~NSSSignatureCreation()
@@ -1101,7 +1140,7 @@ std::variant<std::vector<unsigned char>, CryptoSign::SigningErrorMessage> NSSSig
     {
         void operator()(PLArenaPool *arena) { PORT_FreeArena(arena, PR_FALSE); }
     };
-    std::unique_ptr<PLArenaPool, PLArenaFreeFalse> arena { PORT_NewArena(CryptoSign::maxSupportedSignatureSize) };
+    std::unique_ptr<PLArenaPool, PLArenaFreeFalse> arena { PORT_NewArena(estimated_size) };
 
     // Add the signing certificate as a signed attribute.
     ESSCertIDv2 *aCertIDs[2];

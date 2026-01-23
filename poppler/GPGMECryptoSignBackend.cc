@@ -315,11 +315,11 @@ std::variant<std::vector<unsigned char>, CryptoSign::SigningErrorMessage> GpgSig
                 (char)0xff,
         } };
 
-        if (CryptoSign::maxSupportedSignatureSize - prefixandsize <= signatureString.size()) {
+        if (CryptoSign::defaultMaxSignatureSize - prefixandsize <= signatureString.size()) {
             return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::InternalError, .message = ERROR_IN_CODE_LOCATION };
         }
         std::array<unsigned char, 4> bytes;
-        int n = CryptoSign::maxSupportedSignatureSize - prefixandsize - signatureString.size();
+        int n = CryptoSign::defaultMaxSignatureSize - prefixandsize - signatureString.size();
 
         bytes[0] = (n >> 24) & 0xFF;
         bytes[1] = (n >> 16) & 0xFF;
@@ -348,6 +348,11 @@ std::unique_ptr<X509CertificateInfo> GpgSignatureCreation::getCertificateInfo() 
         return nullptr;
     }
     return getCertificateInfoFromKey(*key, protocol);
+}
+
+unsigned int GpgSignatureCreation::estimateSize() const
+{
+    return CryptoSign::defaultMaxSignatureSize;
 }
 
 GpgSignatureVerification::GpgSignatureVerification(const std::vector<unsigned char> &p7data, GpgME::Protocol protocol_)

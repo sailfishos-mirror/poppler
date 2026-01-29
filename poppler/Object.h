@@ -262,11 +262,11 @@ public:
         type = objInt64;
         int64g = int64gA;
     }
-    explicit Object(Array *arrayA)
+    explicit Object(std::unique_ptr<Array> arrayA)
     {
         assert(arrayA);
         type = objArray;
-        array = arrayA;
+        array = arrayA.release();
     }
     explicit Object(std::unique_ptr<Dict> &&dictA)
     {

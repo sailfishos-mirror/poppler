@@ -1588,18 +1588,18 @@ Object PDFDoc::createTrailerDict(int uxrefSize, bool incrUpdate, Goffset startxR
                 error(errSyntaxWarning, -1, "PDFDoc::createTrailerDict original file's ID entry isn't an array. Trying to continue");
             }
         } else {
-            auto *array = new Array(xRef);
+            auto array = std::make_unique<Array>(xRef);
             // Get the first part of the ID
             array->add(obj4.arrayGet(0));
             array->add(Object(std::make_unique<GooString>((const char *)digest, 16)));
-            trailerDict->set("ID", Object(array));
+            trailerDict->set("ID", Object(std::move(array)));
         }
     } else {
         // new file => same values for the two identifiers
-        auto *array = new Array(xRef);
+        auto array = std::make_unique<Array>(xRef);
         array->add(Object(std::make_unique<GooString>((const char *)digest, 16)));
         array->add(Object(std::make_unique<GooString>((const char *)digest, 16)));
-        trailerDict->set("ID", Object(array));
+        trailerDict->set("ID", Object(std::move(array)));
     }
 
     trailerDict->set("Root", Object(*root));
@@ -1791,21 +1791,21 @@ bool PDFDoc::replacePageDict(int pageNo, int rotate, const PDFRectangle *mediaBo
     pageDict->remove("BleedBox");
     pageDict->remove("TrimBox");
     pageDict->remove("Rotate");
-    auto *mediaBoxArray = new Array(getXRef());
+    auto mediaBoxArray = std::make_unique<Array>(getXRef());
     mediaBoxArray->add(Object(mediaBox->x1));
     mediaBoxArray->add(Object(mediaBox->y1));
     mediaBoxArray->add(Object(mediaBox->x2));
     mediaBoxArray->add(Object(mediaBox->y2));
-    Object mediaBoxObject(mediaBoxArray);
+    Object mediaBoxObject(std::move(mediaBoxArray));
     Object trimBoxObject = mediaBoxObject.copy();
     pageDict->add("MediaBox", std::move(mediaBoxObject));
     if (cropBox != nullptr) {
-        auto *cropBoxArray = new Array(getXRef());
+        auto cropBoxArray = std::make_unique<Array>(getXRef());
         cropBoxArray->add(Object(cropBox->x1));
         cropBoxArray->add(Object(cropBox->y1));
         cropBoxArray->add(Object(cropBox->x2));
         cropBoxArray->add(Object(cropBox->y2));
-        Object cropBoxObject(cropBoxArray);
+        Object cropBoxObject(std::move(cropBoxArray));
         trimBoxObject = cropBoxObject.copy();
         pageDict->add("CropBox", std::move(cropBoxObject));
     }
@@ -2208,12 +2208,12 @@ std::variant<PDFDoc::SignatureData, CryptoSign::SigningErrorMessage> PDFDoc::cre
     annotObj.dictSet("Subtype", Object(objName, "Widget"));
     annotObj.dictSet("FT", Object(objName, "Sig"));
     annotObj.dictSet("T", Object(std::move(partialFieldName)));
-    auto *rectArray = new Array(getXRef());
+    auto rectArray = std::make_unique<Array>(getXRef());
     rectArray->add(Object(rect.x1));
     rectArray->add(Object(rect.y1));
     rectArray->add(Object(rect.x2));
     rectArray->add(Object(rect.y2));
-    annotObj.dictSet("Rect", Object(rectArray));
+    annotObj.dictSet("Rect", Object(std::move(rectArray)));
 
     if (!signatureText.empty() || !signatureTextLeft.empty()) {
         const std::string pdfFontName = form->findPdfFontNameToUseForSigning();

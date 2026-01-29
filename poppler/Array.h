@@ -57,9 +57,9 @@ public:
     int getLength() const { return elems.size(); }
 
     // Copy array with new xref
-    Array *copy(XRef *xrefA) const;
+    std::unique_ptr<Array> copy(XRef *xrefA) const;
 
-    Array *deepCopy() const;
+    std::unique_ptr<Array> deepCopy() const;
 
     // Add an element
     // elem becomes a dead object after this call

@@ -89,7 +89,7 @@ Object Object::deepCopy() const
         obj.cString = copyString(cString);
         break;
     case objArray:
-        obj.array = array->deepCopy();
+        obj.array = array->deepCopy().release();
         break;
     case objDict:
         obj.dict = dict->deepCopy().release();

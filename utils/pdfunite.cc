@@ -38,7 +38,7 @@ static void doMergeNameTree(PDFDoc *doc, XRef *srcXRef, XRef *countRef, int oldR
     Object mergeNameArray = mergeNameTree->lookup("Names");
     Object srcNameArray = srcNameTree->lookup("Names");
     if (mergeNameArray.isArray() && srcNameArray.isArray()) {
-        auto *newNameArray = new Array(srcXRef);
+        auto newNameArray = std::make_unique<Array>(srcXRef);
         int j = 0;
         for (int i = 0; i < srcNameArray.arrayGetLength() - 1; i += 2) {
             const Object &key = srcNameArray.arrayGetNF(i);
@@ -74,10 +74,10 @@ static void doMergeNameTree(PDFDoc *doc, XRef *srcXRef, XRef *countRef, int oldR
             }
             j += 2;
         }
-        srcNameTree->set("Names", Object(newNameArray));
+        srcNameTree->set("Names", Object(std::move(newNameArray)));
         doc->markPageObjects(mergeNameTree, srcXRef, countRef, numOffset, oldRefNum, newRefNum);
     } else if (srcNameArray.isNull() && mergeNameArray.isArray()) {
-        auto *newNameArray = new Array(srcXRef);
+        auto newNameArray = std::make_unique<Array>(srcXRef);
         for (int i = 0; i < mergeNameArray.arrayGetLength() - 1; i += 2) {
             const Object &key = mergeNameArray.arrayGetNF(i);
             const Object &value = mergeNameArray.arrayGetNF(i + 1);
@@ -86,7 +86,7 @@ static void doMergeNameTree(PDFDoc *doc, XRef *srcXRef, XRef *countRef, int oldR
                 newNameArray->add(Object(Ref { .num = value.getRef().num + numOffset, .gen = value.getRef().gen }));
             }
         }
-        srcNameTree->add("Names", Object(newNameArray));
+        srcNameTree->add("Names", Object(std::move(newNameArray)));
         doc->markPageObjects(mergeNameTree, srcXRef, countRef, numOffset, oldRefNum, newRefNum);
     }
 }

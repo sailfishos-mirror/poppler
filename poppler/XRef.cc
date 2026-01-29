@@ -1660,7 +1660,7 @@ void XRef::XRefPreScanWriter::writeEntry(Goffset offset, int /*gen*/, XRefEntryT
 
 void XRef::writeStreamToBuffer(GooString *stmBuf, Dict *xrefDict, XRef *xref)
 {
-    auto *index = new Array(xref);
+    auto index = std::make_unique<Array>(xref);
     stmBuf->clear();
 
     // First pass: determine whether all offsets fit in 4 bytes or not
@@ -1669,16 +1669,16 @@ void XRef::writeStreamToBuffer(GooString *stmBuf, Dict *xrefDict, XRef *xref)
     const int offsetSize = prescan.hasOffsetsBeyond4GB ? sizeof(Goffset) : 4;
 
     // Second pass: actually write the xref stream
-    XRefStreamWriter writer(index, stmBuf, offsetSize);
+    XRefStreamWriter writer(index.get(), stmBuf, offsetSize);
     writeXRef(&writer, false);
 
     xrefDict->set("Type", Object(objName, "XRef"));
-    xrefDict->set("Index", Object(index));
-    auto *wArray = new Array(xref);
+    xrefDict->set("Index", Object(std::move(index)));
+    auto wArray = std::make_unique<Array>(xref);
     wArray->add(Object(1));
     wArray->add(Object(offsetSize));
     wArray->add(Object(2));
-    xrefDict->set("W", Object(wArray));
+    xrefDict->set("W", Object(std::move(wArray)));
 }
 
 bool XRef::parseEntry(Goffset offset, XRefEntry *entry)

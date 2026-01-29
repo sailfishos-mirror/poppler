@@ -542,7 +542,7 @@ void Catalog::addEmbeddedFile(GooFile *file, const std::string &fileName)
     Object embeddedFilesObj = Object(std::make_unique<Dict>(xref));
     const Ref embeddedFilesRef = xref->addIndirectObject(embeddedFilesObj);
 
-    auto *embeddedFilesNamesArray = new Array(xref);
+    auto embeddedFilesNamesArray = std::make_unique<Array>(xref);
 
     // This flattens out the existing EmbeddedFiles nametree (if any), should not be a problem
     NameTree *ef = getEmbeddedFileNameTree();
@@ -574,7 +574,7 @@ void Catalog::addEmbeddedFile(GooFile *file, const std::string &fileName)
         embeddedFilesNamesArray->add(Object(fileSpecRef));
     }
 
-    embeddedFilesObj.dictSet("Names", Object(embeddedFilesNamesArray));
+    embeddedFilesObj.dictSet("Names", Object(std::move(embeddedFilesNamesArray)));
     namesDict->set("EmbeddedFiles", Object(embeddedFilesRef));
 
     if (namesObjRef != Ref::INVALID()) {
@@ -1087,7 +1087,7 @@ Form *Catalog::getCreateForm()
 
         if (!acroForm.isDict()) {
             acroForm = Object(std::make_unique<Dict>(xref));
-            acroForm.dictSet("Fields", Object(new Array(xref)));
+            acroForm.dictSet("Fields", Object(std::make_unique<Array>(xref)));
 
             const Ref newFormRef = xref->addIndirectObject(acroForm);
             catDict.dictSet("AcroForm", Object(newFormRef));

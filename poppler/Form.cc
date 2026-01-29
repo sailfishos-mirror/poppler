@@ -941,7 +941,7 @@ bool FormWidgetSignature::createSignature(Object &vObj, Ref vRef, const GooStrin
     }
 
     vObj.dictAdd("Contents", Object(objHexString, std::string(placeholderLength, '\0')));
-    Object bObj(new Array(xref));
+    Object bObj(std::make_unique<Array>(xref));
     // reserve space in byte range for maximum number of bytes
     bObj.arrayAdd(Object(0LL));
     bObj.arrayAdd(Object(9999999999LL));
@@ -2022,7 +2022,7 @@ void FormFieldChoice::updateSelection()
 
         // Create /I array only if multiple selection is allowed (as per PDF spec)
         if (multiselect) {
-            objI = Object(new Array(xref));
+            objI = Object(std::make_unique<Array>(xref));
         }
 
         if (numSelected == 0) {
@@ -2047,7 +2047,7 @@ void FormFieldChoice::updateSelection()
             }
         } else {
             // More than one option is selected
-            objV = Object(new Array(xref));
+            objV = Object(std::make_unique<Array>(xref));
             for (int i = 0; i < numChoices; i++) {
                 if (choices[i].selected) {
                     if (multiselect) {
@@ -2816,12 +2816,12 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                 fontDescriptor->set("Flags", Object(0)); // Sans Serif
             }
 
-            auto *fontBBox = new Array(xref);
+            auto fontBBox = std::make_unique<Array>(xref);
             fontBBox->add(Object(static_cast<int>(face->bbox.xMin)));
             fontBBox->add(Object(static_cast<int>(face->bbox.yMin)));
             fontBBox->add(Object(static_cast<int>(face->bbox.xMax)));
             fontBBox->add(Object(static_cast<int>(face->bbox.yMax)));
-            fontDescriptor->set("FontBBox", Object(fontBBox));
+            fontDescriptor->set("FontBBox", Object(std::move(fontBBox)));
 
             fontDescriptor->set("Ascent", Object(static_cast<int>(face->ascender)));
 
@@ -2891,7 +2891,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                     fontsWidths.addWidth(code, static_cast<int>(face->glyph->metrics.horiAdvance));
                 }
             }
-            auto *widths = new Array(xref);
+            auto widths = std::make_unique<Array>(xref);
             for (const auto &segment : fontsWidths.takeSegments()) {
                 std::visit(
                         [&widths, &xref](auto &&s) {
@@ -2902,7 +2902,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                                 for (const auto &w : s.widths) {
                                     widthsInner->add(Object(w));
                                 }
-                                widths->add(Object(widthsInner.release()));
+                                widths->add(Object(std::move(widthsInner)));
                             } else if constexpr (std::is_same_v<T, CIDFontsWidthsBuilder::RangeSegment>) {
                                 widths->add(Object(s.first));
                                 widths->add(Object(s.last));
@@ -2913,7 +2913,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                         },
                         segment);
             }
-            descendantFont->set("W", Object(widths));
+            descendantFont->set("W", Object(std::move(widths)));
 
             std::vector<char> data;
             data.reserve(2 * basicMultilingualMaxCode);
@@ -2929,7 +2929,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
 
         descendantFonts->add(Object(std::move(descendantFont)));
 
-        fontDict.dictSet("DescendantFonts", Object(descendantFonts.release()));
+        fontDict.dictSet("DescendantFonts", Object(std::move(descendantFonts)));
     }
 
     const Ref fontDictRef = xref->addIndirectObject(fontDict);

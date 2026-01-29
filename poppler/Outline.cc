@@ -73,7 +73,7 @@ static void insertChildHelper(const std::string &itemTitle, int destPageNum, uns
         it = items.begin() + pos;
     }
 
-    auto *a = new Array(xref);
+    auto a = std::make_unique<Array>(xref);
     Ref *pageRef = doc->getCatalog()->getPageRef(destPageNum);
     if (pageRef != nullptr) {
         a->add(Object(*pageRef));
@@ -91,7 +91,7 @@ static void insertChildHelper(const std::string &itemTitle, int destPageNum, uns
     Object outlineItem = Object(std::make_unique<Dict>(xref));
 
     outlineItem.dictSet("Title", Object(std::make_unique<GooString>(itemTitle)));
-    outlineItem.dictSet("Dest", Object(a));
+    outlineItem.dictSet("Dest", Object(std::move(a)));
     outlineItem.dictSet("Count", Object(1));
     outlineItem.dictAdd("Parent", Object(parentObjRef));
 
@@ -276,7 +276,7 @@ int Outline::addOutlineTreeNodeList(const std::vector<OutlineTreeNode> &nodeList
 
     for (const auto &node : nodeList) {
 
-        auto *a = new Array(doc->getXRef());
+        auto a = std::make_unique<Array>(doc->getXRef());
         Ref *pageRef = doc->getCatalog()->getPageRef(node.destPageNum);
         if (pageRef != nullptr) {
             a->add(Object(*pageRef));
@@ -300,7 +300,7 @@ int Outline::addOutlineTreeNodeList(const std::vector<OutlineTreeNode> &nodeList
         lastRef = outlineItemRef;
 
         outlineItem.dictSet("Title", Object(std::make_unique<GooString>(node.title)));
-        outlineItem.dictSet("Dest", Object(a));
+        outlineItem.dictSet("Dest", Object(std::move(a)));
         itemCount++;
 
         if (prevNodeRef != Ref::INVALID()) {

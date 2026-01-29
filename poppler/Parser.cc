@@ -102,7 +102,7 @@ Object Parser::getObj(bool simpleOnly, const unsigned char *fileKey, CryptAlgori
     // array
     if (!simpleOnly && buf1.isCmd("[")) {
         shift();
-        obj = Object(new Array(lexer.getXRef()));
+        obj = Object(std::make_unique<Array>(lexer.getXRef()));
         while (!buf1.isCmd("]") && !buf1.isEOF() && recursion + 1 < recursionLimit) {
             Object obj2 = getObj(false, fileKey, encAlgorithm, keyLength, objNum, objGen, recursion + 1);
             obj.arrayAdd(std::move(obj2));

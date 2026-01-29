@@ -161,7 +161,7 @@ public:
     // Get resource dictionary.
     Dict *getResourceDict();
     Object *getResourceDictObject();
-    Dict *getResourceDictCopy(XRef *xrefA);
+    std::unique_ptr<Dict> getResourceDictCopy(XRef *xrefA);
 
     // Get annotations array.
     Object getAnnotsObject(XRef *xrefA = nullptr) { return annotsObj.fetch(xrefA ? xrefA : xref); }

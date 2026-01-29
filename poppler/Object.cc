@@ -92,7 +92,7 @@ Object Object::deepCopy() const
         obj.array = array->deepCopy();
         break;
     case objDict:
-        obj.dict = dict->deepCopy();
+        obj.dict = dict->deepCopy().release();
         break;
     case objStream:
         stream->incRef();

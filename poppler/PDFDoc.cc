@@ -1532,7 +1532,7 @@ void PDFDoc::writeObjectFooter(OutStream *outStr)
 
 Object PDFDoc::createTrailerDict(int uxrefSize, bool incrUpdate, Goffset startxRef, Ref *root, XRef *xRef, const char *fileName, Goffset fileSize)
 {
-    Dict *trailerDict = new Dict(xRef);
+    auto trailerDict = std::make_unique<Dict>(xRef);
     trailerDict->set("Size", Object(uxrefSize));
 
     // build a new ID, as recommended in the reference, uses:
@@ -1615,7 +1615,7 @@ Object PDFDoc::createTrailerDict(int uxrefSize, bool incrUpdate, Goffset startxR
         }
     }
 
-    return Object(trailerDict);
+    return Object(std::move(trailerDict));
 }
 
 void PDFDoc::writeXRefTableTrailer(Object &&trailerDict, XRef *uxref, bool writeAllEntries, Goffset uxrefOffset, OutStream *outStr, XRef *xRef)
@@ -2203,7 +2203,7 @@ std::variant<PDFDoc::SignatureData, CryptoSign::SigningErrorMessage> PDFDoc::cre
 
     Form *form = catalog->getCreateForm();
 
-    Object annotObj = Object(new Dict(getXRef()));
+    Object annotObj = Object(std::make_unique<Dict>(getXRef()));
     annotObj.dictSet("Type", Object(objName, "Annot"));
     annotObj.dictSet("Subtype", Object(objName, "Widget"));
     annotObj.dictSet("FT", Object(objName, "Sig"));

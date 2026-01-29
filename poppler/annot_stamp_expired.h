@@ -17,6 +17,7 @@
 #include "PDFDoc.h"
 #include "Dict.h"
 #include "Object.h"
+#include "annot_stamp.h"
 
 static const double ANNOT_STAMP_EXPIRED_WIDTH = 106.758179;
 static const double ANNOT_STAMP_EXPIRED_HEIGHT = 26.484743;
@@ -227,21 +228,9 @@ static const char *ANNOT_STAMP_EXPIRED = "1 0 0 -1 0 26.484741 cm\n"
                                          "3.867 3.844 m B Q\n"
                                          "Q\n";
 
-static Dict *getExpiredStampExtGStateDict(PDFDoc *doc)
+static std::unique_ptr<Dict> getExpiredStampExtGStateDict(PDFDoc *doc)
 {
-    Dict *a0Dict = new Dict(doc->getXRef());
-    a0Dict->add("CA", Object(0.588235));
-    a0Dict->add("ca", Object(0.588235));
-
-    Dict *a1Dict = new Dict(doc->getXRef());
-    a1Dict->add("CA", Object(1));
-    a1Dict->add("ca", Object(1));
-
-    Dict *extGStateDict = new Dict(doc->getXRef());
-    extGStateDict->add("a0", Object(a0Dict));
-    extGStateDict->add("a1", Object(a1Dict));
-
-    return extGStateDict;
+    return getStampExtGStateDict(doc, 0.588235, 0.588235);
 }
 
 #endif

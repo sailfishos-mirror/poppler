@@ -17,6 +17,7 @@
 #include "PDFDoc.h"
 #include "Dict.h"
 #include "Object.h"
+#include "annot_stamp.h"
 
 static const double ANNOT_STAMP_NOT_FOR_PUBLIC_RELEASE_WIDTH = 268.008179;
 static const double ANNOT_STAMP_NOT_FOR_PUBLIC_RELEASE_HEIGHT = 26.484743;
@@ -317,21 +318,9 @@ static const char *ANNOT_STAMP_NOT_FOR_PUBLIC_RELEASE = "1 0 0 -1 0 26.484741 cm
                                                         "3.867 3.844 m S Q\n"
                                                         "Q\n";
 
-static Dict *getNotForPublicReleaseStampExtGStateDict(PDFDoc *doc)
+static std::unique_ptr<Dict> getNotForPublicReleaseStampExtGStateDict(PDFDoc *doc)
 {
-    Dict *a0Dict = new Dict(doc->getXRef());
-    a0Dict->add("CA", Object(0.588235));
-    a0Dict->add("ca", Object(0.588235));
-
-    Dict *a1Dict = new Dict(doc->getXRef());
-    a1Dict->add("CA", Object(1));
-    a1Dict->add("ca", Object(1));
-
-    Dict *extGStateDict = new Dict(doc->getXRef());
-    extGStateDict->add("a0", Object(a0Dict));
-    extGStateDict->add("a1", Object(a1Dict));
-
-    return extGStateDict;
+    return getStampExtGStateDict(doc, 0.588235, 0.588235);
 }
 
 #endif

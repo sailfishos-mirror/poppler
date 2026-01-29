@@ -753,11 +753,11 @@ LinkJavaScript::~LinkJavaScript() = default;
 
 Object LinkJavaScript::createObject(XRef *xref, const std::string &js)
 {
-    Dict *linkDict = new Dict(xref);
+    auto linkDict = std::make_unique<Dict>(xref);
     linkDict->add("S", Object(objName, "JavaScript"));
     linkDict->add("JS", Object(std::make_unique<GooString>(js)));
 
-    return Object(linkDict);
+    return Object(std::move(linkDict));
 }
 
 //------------------------------------------------------------------------

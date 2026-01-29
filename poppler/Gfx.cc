@@ -242,7 +242,7 @@ GfxResources::GfxResources(XRef *xrefA, Dict *resDictA, GfxResources *nextA) : g
     if (resDictA) {
 
         // build font dictionary
-        Dict *resDict = resDictA->copy(xref);
+        std::unique_ptr<Dict> resDict = resDictA->copy(xref);
         Ref fontDictRef;
         const Object &fontDictObj = resDict->lookup("Font", &fontDictRef);
         if (fontDictObj.isDict()) {
@@ -267,7 +267,6 @@ GfxResources::GfxResources(XRef *xrefA, Dict *resDictA, GfxResources *nextA) : g
         // get properties dictionary
         propertiesDict = resDict->lookup("Properties");
 
-        delete resDict;
     } else {
         fonts = nullptr;
         xObjDict.setToNull();
@@ -4967,7 +4966,7 @@ void Gfx::opBeginImage(Object /*args*/[], int /*numArgs*/)
 std::unique_ptr<Stream> Gfx::buildImageStream()
 {
     // build dictionary
-    Object dict(new Dict(xref));
+    Object dict(std::make_unique<Dict>(xref));
     Object obj = parser->getObj();
     while (!obj.isCmd("ID") && !obj.isEOF()) {
         if (!obj.isName()) {

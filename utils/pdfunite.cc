@@ -100,7 +100,7 @@ static void doMergeNameDict(PDFDoc *doc, XRef *srcXRef, XRef *countRef, int oldR
         if (srcNameTree.isDict() && mergeNameTree.isDict()) {
             doMergeNameTree(doc, srcXRef, countRef, oldRefNum, newRefNum, srcNameTree.getDict(), mergeNameTree.getDict(), numOffset);
         } else if (srcNameTree.isNull() && mergeNameTree.isDict()) {
-            Object newNameTree(new Dict(srcXRef));
+            Object newNameTree(std::make_unique<Dict>(srcXRef));
             doMergeNameTree(doc, srcXRef, countRef, oldRefNum, newRefNum, newNameTree.getDict(), mergeNameTree.getDict(), numOffset);
             srcNameDict->add(key, std::move(newNameTree));
         }
@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
         Object pageNames = pageCatDict->lookup("Names");
         if (!pageNames.isNull() && pageNames.isDict()) {
             if (!names.isDict()) {
-                names = Object(new Dict(yRef));
+                names = Object(std::make_unique<Dict>(yRef));
             }
             doMergeNameDict(docs[i].get(), yRef, countRef, 0, 0, names.getDict(), pageNames.getDict(), numOffset);
         }

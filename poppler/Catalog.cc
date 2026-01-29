@@ -529,7 +529,7 @@ void Catalog::addEmbeddedFile(GooFile *file, const std::string &fileName)
     Object namesObj = catDict.getDict()->lookup("Names", &namesObjRef);
     if (!namesObj.isDict()) {
         // Need to create the names Dict
-        catDict.dictSet("Names", Object(new Dict(xref)));
+        catDict.dictSet("Names", Object(std::make_unique<Dict>(xref)));
         namesObj = catDict.getDict()->lookup("Names");
 
         // Trigger getting the names dict again when needed
@@ -539,7 +539,7 @@ void Catalog::addEmbeddedFile(GooFile *file, const std::string &fileName)
     Dict *namesDict = namesObj.getDict();
 
     // We create a new EmbeddedFiles nametree, this replaces the existing one (if any), but it's not a problem
-    Object embeddedFilesObj = Object(new Dict(xref));
+    Object embeddedFilesObj = Object(std::make_unique<Dict>(xref));
     const Ref embeddedFilesRef = xref->addIndirectObject(embeddedFilesObj);
 
     auto *embeddedFilesNamesArray = new Array(xref);
@@ -1014,7 +1014,7 @@ Object *Catalog::getCreateOutline()
     }
 
     // setup an empty outline dict
-    outline = Object(new Dict(doc->getXRef()));
+    outline = Object(std::make_unique<Dict>(doc->getXRef()));
     outline.dictSet("Type", Object(objName, "Outlines"));
     outline.dictSet("Count", Object(0));
 
@@ -1086,7 +1086,7 @@ Form *Catalog::getCreateForm()
         }
 
         if (!acroForm.isDict()) {
-            acroForm = Object(new Dict(xref));
+            acroForm = Object(std::make_unique<Dict>(xref));
             acroForm.dictSet("Fields", Object(new Array(xref)));
 
             const Ref newFormRef = xref->addIndirectObject(acroForm);

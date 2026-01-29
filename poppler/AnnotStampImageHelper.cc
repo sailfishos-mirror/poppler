@@ -37,7 +37,7 @@ void AnnotStampImageHelper::initialize(PDFDoc *docA, int widthA, int heightA, Co
     height = heightA;
     sMaskRef = Ref::INVALID();
 
-    Dict *dict = new Dict(docA->getXRef());
+    auto dict = std::make_unique<Dict>(docA->getXRef());
     dict->add("Type", Object(objName, "XObject"));
     dict->add("Subtype", Object(objName, "Image"));
     dict->add("Width", Object(width));
@@ -60,7 +60,7 @@ void AnnotStampImageHelper::initialize(PDFDoc *docA, int widthA, int heightA, Co
 
     std::vector<char> dataCopied { data, data + dataLength };
 
-    auto dataStream = std::make_unique<AutoFreeMemStream>(std::move(dataCopied), Object(dict));
+    auto dataStream = std::make_unique<AutoFreeMemStream>(std::move(dataCopied), Object(std::move(dict)));
     imgObj = Object(std::move(dataStream));
     ref = doc->getXRef()->addIndirectObject(imgObj);
 }

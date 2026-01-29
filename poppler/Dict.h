@@ -47,13 +47,17 @@
 
 class POPPLER_PRIVATE_EXPORT Dict
 {
+    class PrivateTag
+    {
+    };
+
 public:
     // Constructor.
     explicit Dict(XRef *xrefA);
-    explicit Dict(const Dict *dictA);
-    Dict *copy(XRef *xrefA) const;
+    explicit Dict(const Dict *dictA, PrivateTag /*unused*/ = {});
+    std::unique_ptr<Dict> copy(XRef *xrefA) const;
 
-    Dict *deepCopy() const;
+    std::unique_ptr<Dict> deepCopy() const;
 
     Dict(const Dict &) = delete;
     Dict &operator=(const Dict &) = delete;

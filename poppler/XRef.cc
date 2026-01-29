@@ -1357,7 +1357,7 @@ Object XRef::createDocInfoIfNeeded(Ref *ref)
 
     removeDocInfo();
 
-    obj = Object(new Dict(this));
+    obj = Object(std::make_unique<Dict>(this));
     *ref = addIndirectObject(obj);
     trailerDict.dictSet("Info", Object(*ref));
 
@@ -1530,10 +1530,10 @@ void XRef::removeIndirectObject(Ref r)
     setModified();
 }
 
-Ref XRef::addStreamObject(Dict *dict, std::vector<char> buffer, StreamCompression compression)
+Ref XRef::addStreamObject(std::unique_ptr<Dict> dict, std::vector<char> buffer, StreamCompression compression)
 {
     dict->add("Length", Object((int)buffer.size()));
-    auto stream = std::make_unique<AutoFreeMemStream>(std::move(buffer), Object(dict));
+    auto stream = std::make_unique<AutoFreeMemStream>(std::move(buffer), Object(std::move(dict)));
     stream->setFilterRemovalForbidden(true);
     switch (compression) {
     case StreamCompression::None:;

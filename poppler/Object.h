@@ -268,11 +268,11 @@ public:
         type = objArray;
         array = arrayA;
     }
-    explicit Object(Dict *dictA)
+    explicit Object(std::unique_ptr<Dict> &&dictA)
     {
         assert(dictA);
         type = objDict;
-        dict = dictA;
+        dict = dictA.release();
     }
     template<typename StreamType>
         requires(std::is_base_of_v<Stream, StreamType>)

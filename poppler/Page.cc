@@ -370,7 +370,7 @@ Object *Page::getResourceDictObject()
     return attrs->getResourceDictObject();
 }
 
-Dict *Page::getResourceDictCopy(XRef *xrefA)
+std::unique_ptr<Dict> Page::getResourceDictCopy(XRef *xrefA)
 {
     pageLocker();
     Dict *dict = attrs->getResourceDict();
@@ -379,7 +379,7 @@ Dict *Page::getResourceDictCopy(XRef *xrefA)
 
 void Page::replaceXRef(XRef *xrefA)
 {
-    Dict *pageDict = pageObj.getDict()->copy(xrefA);
+    std::unique_ptr<Dict> pageDict = pageObj.getDict()->copy(xrefA);
     xref = xrefA;
     trans = pageDict->lookupNF("Trans").copy();
     annotsObj = pageDict->lookupNF("Annots").copy();
@@ -393,7 +393,6 @@ void Page::replaceXRef(XRef *xrefA)
     if (resources.isDict()) {
         attrs->replaceResource(std::move(resources));
     }
-    delete pageDict;
 }
 
 /* Loads standalone fields into Page, should be called once per page only */

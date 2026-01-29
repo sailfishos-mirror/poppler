@@ -121,7 +121,7 @@ Object Parser::getObj(bool simpleOnly, const unsigned char *fileKey, CryptAlgori
         // dictionary or stream
     } else if (!simpleOnly && buf1.isCmd("<<")) {
         shift(objNum);
-        obj = Object(new Dict(lexer.getXRef()));
+        obj = Object(std::make_unique<Dict>(lexer.getXRef()));
         bool hasContentsEntry = false;
         while (!buf1.isCmd(">>") && !buf1.isEOF()) {
             if (!buf1.isName()) {

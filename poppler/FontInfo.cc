@@ -51,7 +51,6 @@ FontInfoScanner::~FontInfoScanner() = default;
 std::vector<FontInfo *> FontInfoScanner::scan(int nPages)
 {
     Page *page;
-    Dict *resDict;
     Annots *annots;
     int lastPage;
 
@@ -73,9 +72,8 @@ std::vector<FontInfo *> FontInfoScanner::scan(int nPages)
             continue;
         }
 
-        if ((resDict = page->getResourceDictCopy(xrefA.get()))) {
-            scanFonts(xrefA.get(), resDict, &result);
-            delete resDict;
+        if (std::unique_ptr<Dict> resDict = page->getResourceDictCopy(xrefA.get())) {
+            scanFonts(xrefA.get(), resDict.get(), &result);
         }
         annots = page->getAnnots();
         for (const std::shared_ptr<Annot> &annot : annots->getAnnots()) {

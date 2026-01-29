@@ -87,6 +87,8 @@
 #include FT_FREETYPE_H
 #include <unordered_set>
 
+#include <iostream>
+
 // helper for using std::visit to get a dependent false for static_asserts
 // to help get compile errors if one ever extends variants
 template<class>
@@ -635,7 +637,7 @@ std::optional<CryptoSign::SigningErrorMessage> FormWidgetSignature::signDocument
     signatureField->setCertificateInfo(certInfo);
     updateWidgetAppearance(); // add visible signing info to appearance
 
-    Object vObj(new Dict(xref));
+    Object vObj(std::make_unique<Dict>(xref));
     Ref vref = xref->addIndirectObject(vObj);
     if (!createSignature(vObj, vref, GooString(signerName), CryptoSign::maxSupportedSignatureSize, reason, location, sigHandler->signatureType())) {
         return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::InternalError, .message = ERROR_IN_CODE_LOCATION };
@@ -2758,7 +2760,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
     bool embedActualFont = !(fontSubstitutedIn && GfxFont::isBase14Font(fontFamily, fontStyle));
 
     XRef *xref = doc->getXRef();
-    Object fontDict(new Dict(xref));
+    Object fontDict(std::make_unique<Dict>(xref));
     fontDict.dictSet("Type", Object(objName, "Font"));
     fontDict.dictSet("Subtype", Object(objName, (embedActualFont ? "Type0" : "Type1")));
     fontDict.dictSet("BaseFont", Object(objName, fontFamilyAndStyle.c_str()));
@@ -2775,11 +2777,11 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
 
         {
             // We only support fonts with identity cmaps for now
-            Dict *cidSystemInfo = new Dict(xref);
+            auto cidSystemInfo = std::make_unique<Dict>(xref);
             cidSystemInfo->set("Registry", Object(std::make_unique<GooString>("Adobe")));
             cidSystemInfo->set("Ordering", Object(std::make_unique<GooString>("Identity")));
             cidSystemInfo->set("Supplement", Object(0));
-            descendantFont->set("CIDSystemInfo", Object(cidSystemInfo));
+            descendantFont->set("CIDSystemInfo", Object(std::move(cidSystemInfo)));
         }
 
         FT_Library freetypeLib;
@@ -2850,17 +2852,17 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                 }
 
                 if (isTrueType) {
-                    const Ref fontFile2Ref = xref->addStreamObject(new Dict(xref), std::move(data), StreamCompression::Compress);
+                    const Ref fontFile2Ref = xref->addStreamObject(std::make_unique<Dict>(xref), std::move(data), StreamCompression::Compress);
                     fontDescriptor->set("FontFile2", Object(fontFile2Ref));
                 } else {
-                    Dict *fontFileStreamDict = new Dict(xref);
+                    auto fontFileStreamDict = std::make_unique<Dict>(xref);
                     fontFileStreamDict->set("Subtype", Object(objName, "OpenType"));
-                    const Ref fontFile3Ref = xref->addStreamObject(fontFileStreamDict, std::move(data), StreamCompression::Compress);
+                    const Ref fontFile3Ref = xref->addStreamObject(std::move(fontFileStreamDict), std::move(data), StreamCompression::Compress);
                     fontDescriptor->set("FontFile3", Object(fontFile3Ref));
                 }
             }
 
-            const Ref fontDescriptorRef = xref->addIndirectObject(Object(fontDescriptor.release()));
+            const Ref fontDescriptorRef = xref->addIndirectObject(Object(std::move(fontDescriptor)));
             descendantFont->set("FontDescriptor", Object(fontDescriptorRef));
         }
 
@@ -2921,11 +2923,11 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                 data.push_back((char)(glyph >> 8));
                 data.push_back((char)(glyph & 0xff));
             }
-            const Ref cidToGidMapStream = xref->addStreamObject(new Dict(xref), std::move(data), StreamCompression::Compress);
+            const Ref cidToGidMapStream = xref->addStreamObject(std::make_unique<Dict>(xref), std::move(data), StreamCompression::Compress);
             descendantFont->set("CIDToGIDMap", Object(cidToGidMapStream));
         }
 
-        descendantFonts->add(Object(descendantFont.release()));
+        descendantFonts->add(Object(std::move(descendantFont)));
 
         fontDict.dictSet("DescendantFonts", Object(descendantFonts.release()));
     }
@@ -2957,15 +2959,15 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
         delete defaultResources;
         defaultResources = new GfxResources(xref, resDict.getDict(), nullptr);
     } else {
-        Dict *fontsDict = new Dict(xref);
+        auto fontsDict = std::make_unique<Dict>(xref);
         fontsDict->set(dictFontName, Object(fontDictRef));
 
-        Dict *defaultResourcesDict = new Dict(xref);
-        defaultResourcesDict->set("Font", Object(fontsDict));
+        auto defaultResourcesDict = std::make_unique<Dict>(xref);
+        defaultResourcesDict->set("Font", Object(std::move(fontsDict)));
 
         assert(!defaultResources);
-        defaultResources = new GfxResources(xref, defaultResourcesDict, nullptr);
-        resDict = Object(defaultResourcesDict);
+        defaultResources = new GfxResources(xref, defaultResourcesDict.get(), nullptr);
+        resDict = Object(std::move(defaultResourcesDict));
 
         acroForm->dictSet("DR", resDict.copy());
         doc->getCatalog()->setAcroFormModified();

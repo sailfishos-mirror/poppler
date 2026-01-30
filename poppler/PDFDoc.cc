@@ -776,7 +776,7 @@ bool PDFDoc::getID(GooString *permanent_id, GooString *update_id) const
 {
     Object obj = xref->getTrailerDict()->dictLookup("ID");
 
-    if (obj.isArray() && obj.arrayGetLength() == 2) {
+    if (obj.isArrayOfLength(2)) {
         if (permanent_id) {
             Object obj2 = obj.arrayGet(0);
             if (obj2.isString()) {

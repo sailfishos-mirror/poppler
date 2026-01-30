@@ -914,7 +914,7 @@ AnnotIconFit::AnnotIconFit(Dict *dict)
     }
 
     obj1 = dict->lookup("A");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         left = obj1.arrayGet(0).getNumWithDefaultValue(0);
         bottom = obj1.arrayGet(1).getNumWithDefaultValue(0);
 
@@ -1310,7 +1310,7 @@ void Annot::initialize(PDFDoc *docA, Dict *dict)
     //----- parse the rectangle
     rect = std::make_unique<PDFRectangle>();
     obj1 = dict->lookup("Rect");
-    if (obj1.isArray() && obj1.arrayGetLength() == 4) {
+    if (obj1.isArrayOfLength(4)) {
         rect->x1 = obj1.arrayGet(0).getNumWithDefaultValue(0);
         rect->y1 = obj1.arrayGet(1).getNumWithDefaultValue(0);
         rect->x2 = obj1.arrayGet(2).getNumWithDefaultValue(1);
@@ -3470,7 +3470,7 @@ void AnnotLine::initialize(Dict *dict)
     Object obj1;
 
     obj1 = dict->lookup("L");
-    if (obj1.isArray() && obj1.arrayGetLength() == 4) {
+    if (obj1.isArrayOfLength(4)) {
         const double x1 = obj1.arrayGet(0).getNumWithDefaultValue(0);
         const double y1 = obj1.arrayGet(1).getNumWithDefaultValue(0);
         const double x2 = obj1.arrayGet(2).getNumWithDefaultValue(0);
@@ -3484,7 +3484,7 @@ void AnnotLine::initialize(Dict *dict)
     }
 
     obj1 = dict->lookup("LE");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         Object obj2;
 
         obj2 = obj1.arrayGet(0);
@@ -3562,7 +3562,7 @@ void AnnotLine::initialize(Dict *dict)
     }
 
     obj1 = dict->lookup("CO");
-    if (obj1.isArray() && (obj1.arrayGetLength() == 2)) {
+    if (obj1.isArrayOfLength(2)) {
         captionTextHorizontal = obj1.arrayGet(0).getNumWithDefaultValue(0);
         captionTextVertical = obj1.arrayGet(1).getNumWithDefaultValue(0);
     } else {
@@ -6235,7 +6235,7 @@ void AnnotPolygon::initialize(Dict *dict)
     }
 
     obj1 = dict->lookup("LE");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         Object obj2 = obj1.arrayGet(0);
         if (obj2.isName()) {
             startStyle = parseAnnotLineEndingStyle(obj2);

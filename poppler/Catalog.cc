@@ -1289,7 +1289,7 @@ GfxLCMSProfilePtr Catalog::getDisplayProfile()
     Object catDict = xref->getCatalog();
     if (catDict.isDict()) {
         Object outputIntents = catDict.dictLookup("OutputIntents");
-        if ((outputIntents.isArray() && outputIntents.arrayGetLength() == 1)) {
+        if (outputIntents.isArrayOfLength(1)) {
             Object firstElement = outputIntents.arrayGet(0);
             if (firstElement.isDict()) {
                 Object profile = firstElement.dictLookup("DestOutputProfile");

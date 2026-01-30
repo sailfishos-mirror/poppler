@@ -1852,7 +1852,7 @@ GfxCIDFont::GfxCIDFont(const char *tagA, Ref idA, std::optional<std::string> &&n
 
     // default metrics for vertical font
     obj1 = desFontDict->lookup("DW2");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         obj2 = obj1.arrayGet(0);
         if (obj2.isNum()) {
             widths.defVY = obj2.getNum() * 0.001;

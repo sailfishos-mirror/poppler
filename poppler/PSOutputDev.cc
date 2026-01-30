@@ -6666,7 +6666,7 @@ void PSOutputDev::opiBegin20(GfxState * /*state*/, const Dict &dict)
     //~ need to use writePSString() and deal with >255-char lines
 
     obj1 = dict.lookup("Size");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         obj2 = obj1.arrayGet(0);
         width = obj2.getNum();
         obj2 = obj1.arrayGet(1);
@@ -6675,7 +6675,7 @@ void PSOutputDev::opiBegin20(GfxState * /*state*/, const Dict &dict)
     }
 
     obj1 = dict.lookup("CropRect");
-    if (obj1.isArray() && obj1.arrayGetLength() == 4) {
+    if (obj1.isArrayOfLength(4)) {
         obj2 = obj1.arrayGet(0);
         left = obj2.getNum();
         obj2 = obj1.arrayGet(1);
@@ -6717,7 +6717,7 @@ void PSOutputDev::opiBegin20(GfxState * /*state*/, const Dict &dict)
     writePS("%%BeginIncludedImage\n");
 
     obj1 = dict.lookup("IncludedImageDimensions");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         obj2 = obj1.arrayGet(0);
         w = obj2.getInt();
         obj2 = obj1.arrayGet(1);
@@ -6753,7 +6753,7 @@ void PSOutputDev::opiBegin13(GfxState *state, const Dict &dict)
     }
 
     obj1 = dict.lookup("CropRect");
-    if (obj1.isArray() && obj1.arrayGetLength() == 4) {
+    if (obj1.isArrayOfLength(4)) {
         obj2 = obj1.arrayGet(0);
         left = obj2.getInt();
         obj2 = obj1.arrayGet(1);
@@ -6766,7 +6766,7 @@ void PSOutputDev::opiBegin13(GfxState *state, const Dict &dict)
     }
 
     obj1 = dict.lookup("Color");
-    if (obj1.isArray() && obj1.arrayGetLength() == 5) {
+    if (obj1.isArrayOfLength(5)) {
         obj2 = obj1.arrayGet(0);
         c = obj2.getNum();
         obj2 = obj1.arrayGet(1);
@@ -6825,7 +6825,7 @@ void PSOutputDev::opiBegin13(GfxState *state, const Dict &dict)
     }
 
     obj1 = dict.lookup("ImageType");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         obj2 = obj1.arrayGet(0);
         samples = obj2.getInt();
         obj2 = obj1.arrayGet(1);
@@ -6839,7 +6839,7 @@ void PSOutputDev::opiBegin13(GfxState *state, const Dict &dict)
     }
 
     obj1 = dict.lookup("Position");
-    if (obj1.isArray() && obj1.arrayGetLength() == 8) {
+    if (obj1.isArrayOfLength(8)) {
         obj2 = obj1.arrayGet(0);
         llx = obj2.getNum();
         obj2 = obj1.arrayGet(1);
@@ -6864,7 +6864,7 @@ void PSOutputDev::opiBegin13(GfxState *state, const Dict &dict)
     }
 
     obj1 = dict.lookup("Resolution");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         obj2 = obj1.arrayGet(0);
         horiz = obj2.getNum();
         obj2 = obj1.arrayGet(1);
@@ -6873,7 +6873,7 @@ void PSOutputDev::opiBegin13(GfxState *state, const Dict &dict)
     }
 
     obj1 = dict.lookup("Size");
-    if (obj1.isArray() && obj1.arrayGetLength() == 2) {
+    if (obj1.isArrayOfLength(2)) {
         obj2 = obj1.arrayGet(0);
         width = obj2.getInt();
         obj2 = obj1.arrayGet(1);

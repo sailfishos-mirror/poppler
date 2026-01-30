@@ -213,7 +213,7 @@ bool PageAttrs::readBox(Dict *dict, const char *key, PDFRectangle *box)
     bool ok;
 
     obj1 = dict->lookup(key);
-    if (obj1.isArray() && obj1.arrayGetLength() == 4) {
+    if (obj1.isArrayOfLength(4)) {
         ok = true;
         obj2 = obj1.arrayGet(0);
         if (obj2.isNum()) {

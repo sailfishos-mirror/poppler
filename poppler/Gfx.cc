@@ -977,7 +977,7 @@ void Gfx::opSetExtGState(Object args[], int /*numArgs*/)
         opSetMiterLimit(&obj2, 1);
     }
     obj2 = obj1.dictLookup("D");
-    if (obj2.isArray() && obj2.arrayGetLength() == 2) {
+    if (obj2.isArrayOfLength(2)) {
         Object args2[2];
         args2[0] = obj2.arrayGet(0);
         args2[1] = obj2.arrayGet(1);
@@ -1063,7 +1063,7 @@ void Gfx::opSetExtGState(Object args[], int /*numArgs*/)
     if (obj2.isName("Default") || obj2.isName("Identity")) {
         state->setTransfer({});
         out->updateTransfer(state);
-    } else if (obj2.isArray() && obj2.arrayGetLength() == 4) {
+    } else if (obj2.isArrayOfLength(4)) {
         std::vector<std::unique_ptr<Function>> funcs;
         funcs.resize(4);
         for (int i = 0; i < 4; ++i) {

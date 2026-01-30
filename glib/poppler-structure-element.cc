@@ -1149,7 +1149,7 @@ static inline void convert_doubles_array(const Object *object, gdouble **values,
 static inline void convert_color(const Object *object, PopplerColor *color)
 {
     g_assert(color != nullptr);
-    g_assert(object->isArray() && object->arrayGetLength() != 3);
+    g_assert(object->isArrayOfLength(3));
 
     color->red = object->arrayGet(0).getNum() * 65535;
     color->green = object->arrayGet(1).getNum() * 65535;

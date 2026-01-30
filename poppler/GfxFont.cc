@@ -1710,7 +1710,7 @@ GfxCIDFont::GfxCIDFont(const char *tagA, Ref idA, std::optional<std::string> &&n
 
     // get the descendant font
     obj1 = fontDict.lookup("DescendantFonts");
-    if (!obj1.isArray() || obj1.arrayGetLength() == 0) {
+    if (!obj1.isArrayOfLengthAtLeast(1)) {
         error(errSyntaxError, -1, "Missing or empty DescendantFonts entry in Type 0 font");
         return;
     }

@@ -5258,7 +5258,7 @@ void Gfx::drawAnnot(Object *str, AnnotBorder *border, AnnotColor *aColor, double
 
         // get the form matrix
         Object matrixObj = dict->lookup("Matrix");
-        if (matrixObj.isArray() && matrixObj.arrayGetLength() >= 6) {
+        if (matrixObj.isArrayOfLengthAtLeast(6)) {
             for (i = 0; i < 6; ++i) {
                 Object obj1 = matrixObj.arrayGet(i);
                 if (likely(obj1.isNum())) {

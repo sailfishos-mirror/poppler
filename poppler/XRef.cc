@@ -734,7 +734,7 @@ bool XRef::readXRefStream(Stream *xrefStr, Goffset *pos)
     }
 
     obj = dict->lookupNF("W").copy();
-    if (!obj.isArray() || obj.arrayGetLength() < 3) {
+    if (!obj.isArrayOfLengthAtLeast(3)) {
         return false;
     }
     for (int i = 0; i < 3; ++i) {

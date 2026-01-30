@@ -267,7 +267,7 @@ std::unique_ptr<GfxColorSpace> GfxColorSpace::parse(GfxResources *res, Object *c
         }
         error(errSyntaxWarning, -1, "Bad color space '{0:s}'", csObj->getName());
 
-    } else if (csObj->isArray() && csObj->arrayGetLength() > 0) {
+    } else if (csObj->isArrayOfLengthAtLeast(1)) {
         obj1 = csObj->arrayGet(0);
         if (obj1.isName("DeviceGray") || obj1.isName("G")) {
             if (res != nullptr) {
@@ -4595,7 +4595,7 @@ std::unique_ptr<GfxGouraudTriangleShading> GfxGouraudTriangleShading::parse(GfxR
         }
     }
     obj1 = dict->lookup("Decode");
-    if (obj1.isArray() && obj1.arrayGetLength() >= 6) {
+    if (obj1.isArrayOfLengthAtLeast(6)) {
         bool decodeOk = true;
         xMin = obj1.arrayGet(0).getNum(&decodeOk);
         xMax = obj1.arrayGet(1).getNum(&decodeOk);
@@ -4922,7 +4922,7 @@ std::unique_ptr<GfxPatchMeshShading> GfxPatchMeshShading::parse(GfxResources *re
         return {};
     }
     obj1 = dict->lookup("Decode");
-    if (obj1.isArray() && obj1.arrayGetLength() >= 6) {
+    if (obj1.isArrayOfLengthAtLeast(6)) {
         bool decodeOk = true;
         xMin = obj1.arrayGet(0).getNum(&decodeOk);
         xMax = obj1.arrayGet(1).getNum(&decodeOk);

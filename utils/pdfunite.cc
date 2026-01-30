@@ -227,12 +227,12 @@ int main(int argc, char *argv[])
         if (!names.isNull() && names.isDict() && refPage) {
             docs[0]->markPageObjects(names.getDict(), yRef, countRef, 0, refPage->num, refPage->num);
         }
-        if (intents.isArray() && intents.arrayGetLength() > 0) {
+        if (intents.isArrayOfLengthAtLeast(1)) {
             for (size_t i = 1; i < docs.size(); i++) {
                 Object pagecatObj = docs[i]->getXRef()->getCatalog();
                 Dict *pagecatDict = pagecatObj.getDict();
                 Object pageintents = pagecatDict->lookup("OutputIntents");
-                if (pageintents.isArray() && pageintents.arrayGetLength() > 0) {
+                if (pageintents.isArrayOfLengthAtLeast(1)) {
                     for (int j = intents.arrayGetLength() - 1; j >= 0; j--) {
                         Object intent = intents.arrayGet(j, 0);
                         if (intent.isDict()) {
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        if (intents.isArray() && intents.arrayGetLength() > 0) {
+        if (intents.isArrayOfLengthAtLeast(1)) {
             for (int j = intents.arrayGetLength() - 1; j >= 0; j--) {
                 Object intent = intents.arrayGet(j, 0);
                 if (intent.isDict()) {
@@ -356,7 +356,7 @@ int main(int argc, char *argv[])
     outStr->printf("%d 0 obj\n", rootNum);
     outStr->printf("<< /Type /Catalog /Pages %d 0 R", rootNum + 1);
     // insert OutputIntents
-    if (intents.isArray() && intents.arrayGetLength() > 0) {
+    if (intents.isArrayOfLengthAtLeast(1)) {
         outStr->printf(" /OutputIntents [");
         for (int j = 0; j < intents.arrayGetLength(); j++) {
             Object intent = intents.arrayGet(j, 0);

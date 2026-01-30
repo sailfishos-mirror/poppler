@@ -250,7 +250,7 @@ void JPXStream::init()
     }
 
     bool indexed = false;
-    if (cspace.isArray() && cspace.arrayGetLength() > 0) {
+    if (cspace.isArrayOfLengthAtLeast(1)) {
         const Object cstype = cspace.arrayGet(0);
         if (cstype.isName("Indexed")) {
             indexed = true;

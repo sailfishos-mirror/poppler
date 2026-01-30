@@ -201,7 +201,7 @@ void OptContentModelPrivate::parseOrderArray(OptContentItem *parentNode, const A
                     qDebug() << "could not find group for object" << item.getRefNum();
                 }
             }
-        } else if ((orderItem.isArray()) && (orderItem.arrayGetLength() > 0)) {
+        } else if (orderItem.isArrayOfLengthAtLeast(1)) {
             parseOrderArray(lastItem, orderItem.getArray());
         } else if (orderItem.isString()) {
             const GooString *label = orderItem.getString();

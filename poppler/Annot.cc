@@ -2916,7 +2916,7 @@ void AnnotFreeText::initialize(Dict *dict)
     }
 
     obj1 = dict->lookup("CL");
-    if (obj1.isArray() && obj1.arrayGetLength() >= 4) {
+    if (obj1.isArrayOfLengthAtLeast(4)) {
         const double x1 = obj1.arrayGet(0).getNumWithDefaultValue(0);
         const double y1 = obj1.arrayGet(1).getNumWithDefaultValue(0);
         const double x2 = obj1.arrayGet(2).getNumWithDefaultValue(0);

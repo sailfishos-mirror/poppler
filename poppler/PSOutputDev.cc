@@ -6695,7 +6695,7 @@ void PSOutputDev::opiBegin20(GfxState * /*state*/, const Dict &dict)
     obj1 = dict.lookup("Inks");
     if (obj1.isName()) {
         writePSFmt("%%ImageInks: {0:s}\n", obj1.getName());
-    } else if (obj1.isArray() && obj1.arrayGetLength() >= 1) {
+    } else if (obj1.isArrayOfLengthAtLeast(1)) {
         obj2 = obj1.arrayGet(0);
         if (obj2.isName()) {
             writePSFmt("%%ImageInks: {0:s} {1:d}", obj2.getName(), (obj1.arrayGetLength() - 1) / 2);

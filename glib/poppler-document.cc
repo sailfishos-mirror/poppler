@@ -3275,7 +3275,7 @@ static GList *get_optional_content_items_sorted(const OCGs *ocg, Layer *parent, 
                 items = g_list_prepend(items, layer);
                 last_item = layer;
             }
-        } else if (orderItem.isArray() && orderItem.arrayGetLength() > 0) {
+        } else if (orderItem.isArrayOfLengthAtLeast(1)) {
             if (!last_item) {
                 last_item = layer_new(nullptr);
                 items = g_list_prepend(items, last_item);

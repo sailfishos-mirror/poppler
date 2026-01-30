@@ -191,7 +191,7 @@ bool OCGs::evalOCVisibilityExpr(const Object *expr, int recursion) const
         }
     }
     Object expr2 = expr->fetch(m_xref);
-    if (!expr2.isArray() || expr2.arrayGetLength() < 1) {
+    if (!expr2.isArrayOfLengthAtLeast(1)) {
         error(errSyntaxError, -1, "Invalid optional content visibility expression");
         return true;
     }

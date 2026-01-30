@@ -44,8 +44,8 @@ public:
 
     OptionalContentGroup *findOcgByRef(Ref ref) const;
 
-    const Array *getOrderArray() const { return (order.isArray() && order.arrayGetLength() > 0) ? order.getArray() : nullptr; }
-    const Array *getRBGroupsArray() const { return (rbgroups.isArray() && rbgroups.arrayGetLength()) ? rbgroups.getArray() : nullptr; }
+    const Array *getOrderArray() const { return order.isArrayOfLengthAtLeast(1) ? order.getArray() : nullptr; }
+    const Array *getRBGroupsArray() const { return rbgroups.isArrayOfLengthAtLeast(1) ? rbgroups.getArray() : nullptr; }
 
     bool optContentIsVisible(const Object *dictRef) const;
 

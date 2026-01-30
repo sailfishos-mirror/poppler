@@ -98,6 +98,11 @@ inline bool Object::isArrayOfLength(int length) const
     return type == objArray && array->getLength() == length;
 }
 
+inline bool Object::isArrayOfLengthAtLeast(int length) const
+{
+    return type == objArray && array->getLength() >= length;
+}
+
 inline int Object::arrayGetLength() const
 {
     OBJECT_TYPE_CHECK(objArray);

@@ -64,7 +64,7 @@ unsigned int Linearization::getHintsOffset() const
     int hintsOffset;
 
     Object obj1, obj2;
-    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArray()) && obj1.arrayGetLength() >= 2 && (obj2 = obj1.arrayGet(0), obj2.isInt()) && obj2.getInt() > 0) {
+    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArrayOfLengthAtLeast(2)) && (obj2 = obj1.arrayGet(0), obj2.isInt()) && obj2.getInt() > 0) {
         hintsOffset = obj2.getInt();
     } else {
         error(errSyntaxWarning, -1, "Hints table offset in linearization table is invalid");
@@ -79,7 +79,7 @@ unsigned int Linearization::getHintsLength() const
     int hintsLength;
 
     Object obj1, obj2;
-    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArray()) && obj1.arrayGetLength() >= 2 && (obj2 = obj1.arrayGet(1), obj2.isInt()) && obj2.getInt() > 0) {
+    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArrayOfLengthAtLeast(2)) && (obj2 = obj1.arrayGet(1), obj2.isInt()) && obj2.getInt() > 0) {
         hintsLength = obj2.getInt();
     } else {
         error(errSyntaxWarning, -1, "Hints table length in linearization table is invalid");
@@ -94,7 +94,7 @@ unsigned int Linearization::getHintsOffset2() const
     int hintsOffset2 = 0; // default to 0
 
     Object obj1;
-    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArray()) && obj1.arrayGetLength() >= 4) {
+    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArrayOfLengthAtLeast(4))) {
         Object obj2 = obj1.arrayGet(2);
         if (obj2.isInt() && obj2.getInt() > 0) {
             hintsOffset2 = obj2.getInt();
@@ -112,7 +112,7 @@ unsigned int Linearization::getHintsLength2() const
     int hintsLength2 = 0; // default to 0
 
     Object obj1;
-    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArray()) && obj1.arrayGetLength() >= 4) {
+    if (linDict.isDict() && (obj1 = linDict.dictLookup("H"), obj1.isArrayOfLengthAtLeast(4))) {
         Object obj2 = obj1.arrayGet(3);
         if (obj2.isInt() && obj2.getInt() > 0) {
             hintsLength2 = obj2.getInt();

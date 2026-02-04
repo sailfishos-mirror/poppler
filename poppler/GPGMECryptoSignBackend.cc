@@ -203,7 +203,7 @@ static std::unique_ptr<X509CertificateInfo> getCertificateInfoFromKey(const GpgM
         certificateInfo->setKeyLocation(KeyLocation::Computer);
     }
 
-    certificateInfo->setQualified(subkey.isQualified());
+    certificateInfo->setQualified(key.isQualified());
 
     return certificateInfo;
 }
@@ -241,6 +241,8 @@ std::vector<std::unique_ptr<X509CertificateInfo>> GpgSignatureBackend::getAvaila
     std::vector<std::unique_ptr<X509CertificateInfo>> certificates;
     for (auto type : allowedTypes()) {
         const auto context = GpgME::Context::create(type);
+        context->setOffline(true); /* This avoids a subset of expensive checks that Validate keylist mode enables*/
+        context->addKeyListMode(GpgME::Validate); /* We need the validate option to be able to list qualified keys  */
         auto err = context->startKeyListing(static_cast<const char *>(nullptr), true /*secretOnly*/);
         while (isSuccess(err)) {
             const auto key = context->nextKey(err);

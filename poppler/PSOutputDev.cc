@@ -1857,7 +1857,7 @@ void PSOutputDev::setupFonts(Dict *resDict)
     Ref fontDictRef;
     const Object &fontDictObj = resDict->lookup("Font", &fontDictRef);
     if (fontDictObj.isDict()) {
-        GfxFontDict gfxFontDict(xref, fontDictRef, fontDictObj.getDict());
+        GfxFontDict gfxFontDict(xref, fontDictRef, *fontDictObj.getDict());
         for (int i = 0; i < gfxFontDict.getNumFonts(); ++i) {
             if (const std::shared_ptr<GfxFont> &font = gfxFontDict.getFont(i)) {
                 setupFont(font.get(), resDict);

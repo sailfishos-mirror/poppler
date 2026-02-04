@@ -246,7 +246,7 @@ GfxResources::GfxResources(XRef *xrefA, Dict *resDictA, GfxResources *nextA) : g
         Ref fontDictRef;
         const Object &fontDictObj = resDict->lookup("Font", &fontDictRef);
         if (fontDictObj.isDict()) {
-            fonts = std::make_unique<GfxFontDict>(xref, fontDictRef, fontDictObj.getDict());
+            fonts = std::make_unique<GfxFontDict>(xref, fontDictRef, *fontDictObj.getDict());
         }
 
         // get XObject dictionary
@@ -1176,7 +1176,7 @@ void Gfx::opSetExtGState(Object args[], int /*numArgs*/)
                 Object fobj = fargs0.fetch(xref);
                 if (fobj.isDict()) {
                     Ref r = fargs0.getRef();
-                    std::shared_ptr<GfxFont> font = GfxFont::makeFont(xref, args[0].getName(), r, fobj.getDict());
+                    std::shared_ptr<GfxFont> font = GfxFont::makeFont(xref, args[0].getName(), r, *fobj.getDict());
                     state->setFont(font, fargs1.getNum());
                     fontChanged = true;
                 }

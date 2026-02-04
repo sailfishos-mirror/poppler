@@ -3074,7 +3074,7 @@ static std::unique_ptr<GfxFont> createAnnotDrawFont(XRef *xref, Dict *fontParent
         fontParentDict->add("Font", fontsDictObj.copy()); // This is not a copy it's a ref
     }
 
-    auto font = GfxFont::makeFont(xref, resourceName, dummyRef, fontDict.get());
+    auto font = GfxFont::makeFont(xref, resourceName, dummyRef, *fontDict);
     fontsDictObj.dictSet(resourceName, Object(std::move(fontDict)));
     return font;
 }
@@ -3376,7 +3376,7 @@ void AnnotFreeText::generateFreeTextAppearance()
             Object fontDictionary = fontResources.getDict()->lookup(da.getFontName(), &fontReference);
 
             if (fontDictionary.isDict()) {
-                font = GfxFont::makeFont(doc->getXRef(), da.getFontName().c_str(), fontReference, fontDictionary.getDict());
+                font = GfxFont::makeFont(doc->getXRef(), da.getFontName().c_str(), fontReference, *fontDictionary.getDict());
             } else {
                 error(errSyntaxWarning, -1, "Font dictionary is not a dictionary");
             }

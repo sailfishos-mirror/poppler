@@ -3,7 +3,7 @@
 // FontInfo.cc
 //
 // Copyright (C) 2005, 2006 Kristian Høgsberg <krh@redhat.com>
-// Copyright (C) 2005-2008, 2010, 2017-2020, 2023-2025 Albert Astals Cid <aacid@kde.org>
+// Copyright (C) 2005-2008, 2010, 2017-2020, 2023-2026 Albert Astals Cid <aacid@kde.org>
 // Copyright (C) 2005 Brad Hards <bradh@frogmouth.net>
 // Copyright (C) 2006 Kouhei Sutou <kou@cozmixng.org>
 // Copyright (C) 2009 Pino Toscano <pino@kde.org>
@@ -95,7 +95,7 @@ void FontInfoScanner::scanFonts(XRef *xrefA, Dict *resDict, std::vector<FontInfo
     Ref fontDictRef;
     const Object &fontObj = resDict->lookup("Font", &fontDictRef);
     if (fontObj.isDict()) {
-        GfxFontDict gfxFontDict(xrefA, fontDictRef, fontObj.getDict());
+        GfxFontDict gfxFontDict(xrefA, fontDictRef, *fontObj.getDict());
         for (int i = 0; i < gfxFontDict.getNumFonts(); ++i) {
             if (const std::shared_ptr<GfxFont> &font = gfxFontDict.getFont(i)) {
                 Ref fontRef = *font->getID();

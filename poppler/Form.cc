@@ -87,8 +87,6 @@
 #include FT_FREETYPE_H
 #include <unordered_set>
 
-#include <iostream>
-
 // helper for using std::visit to get a dependent false for static_asserts
 // to help get compile errors if one ever extends variants
 template<class>

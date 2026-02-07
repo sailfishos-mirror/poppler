@@ -685,7 +685,7 @@ void poppler_structure_element_iter_free(PopplerStructureElementIter *iter)
  * }
  * </programlisting></informalexample>
  *
- * Return value: (transfer full): a new #PopplerStructureElementIter, or %NULL if document
+ * Return value: (nullable) (transfer full): a new #PopplerStructureElementIter, or %NULL if document
  *    doesn't have structure tree.
  *
  * Since: 0.26

@@ -53,11 +53,8 @@ public:
     void removeAnnotStampImageObject();
 
 private:
-    void initialize(PDFDoc *docA, int widthA, int heightA, ColorSpace colorSpace, int bitsPerComponent, char *data, int dataLength);
-
     PDFDoc *doc;
 
-    Object imgObj;
     Ref ref;
     Ref sMaskRef;
 

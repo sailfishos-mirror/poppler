@@ -17,25 +17,16 @@
 #include "Dict.h"
 
 AnnotStampImageHelper::AnnotStampImageHelper(PDFDoc *docA, int widthA, int heightA, ColorSpace colorSpace, int bitsPerComponent, char *data, int dataLength)
+    : AnnotStampImageHelper(docA, widthA, heightA, colorSpace, bitsPerComponent, data, dataLength, Ref::INVALID())
 {
-    initialize(docA, widthA, heightA, colorSpace, bitsPerComponent, data, dataLength);
 }
 
 AnnotStampImageHelper::AnnotStampImageHelper(PDFDoc *docA, int widthA, int heightA, ColorSpace colorSpace, int bitsPerComponent, char *data, int dataLength, Ref softMaskRef)
 {
-    initialize(docA, widthA, heightA, colorSpace, bitsPerComponent, data, dataLength);
-
-    sMaskRef = softMaskRef;
-    Dict *dict = imgObj.streamGetDict();
-    dict->add("SMask", Object(sMaskRef));
-}
-
-void AnnotStampImageHelper::initialize(PDFDoc *docA, int widthA, int heightA, ColorSpace colorSpace, int bitsPerComponent, char *data, int dataLength)
-{
     doc = docA;
     width = widthA;
     height = heightA;
-    sMaskRef = Ref::INVALID();
+    sMaskRef = softMaskRef;
 
     auto dict = std::make_unique<Dict>(docA->getXRef());
     dict->add("Type", Object(objName, "XObject"));
@@ -44,7 +35,7 @@ void AnnotStampImageHelper::initialize(PDFDoc *docA, int widthA, int heightA, Co
     dict->add("Height", Object(height));
     dict->add("ImageMask", Object(false));
     dict->add("BitsPerComponent", Object(bitsPerComponent));
-    dict->add("Length", Object(dataLength));
+    // Note: "Length" is added automatically by addStreamObject
 
     switch (colorSpace) {
     case ColorSpace::DeviceGray:
@@ -58,11 +49,14 @@ void AnnotStampImageHelper::initialize(PDFDoc *docA, int widthA, int heightA, Co
         break;
     }
 
+    // Add soft mask reference if provided and must be done before addStreamObject
+    if (sMaskRef != Ref::INVALID()) {
+        dict->add("SMask", Object(sMaskRef));
+    }
+
     std::vector<char> dataCopied { data, data + dataLength };
 
-    auto dataStream = std::make_unique<AutoFreeMemStream>(std::move(dataCopied), Object(std::move(dict)));
-    imgObj = Object(std::move(dataStream));
-    ref = doc->getXRef()->addIndirectObject(imgObj);
+    ref = doc->getXRef()->addStreamObject(std::move(dict), std::move(dataCopied), StreamCompression::Compress);
 }
 
 void AnnotStampImageHelper::removeAnnotStampImageObject()

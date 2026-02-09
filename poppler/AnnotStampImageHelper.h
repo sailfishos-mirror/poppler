@@ -4,6 +4,7 @@
 //
 // Copyright (C) 2021 Mahmoud Ahmed Khalil <mahmoudkhalil11@gmail.com>
 // Copyright (C) 2021 Albert Astals Cid <aacid@kde.org>
+// Copyright (C) 2026 Malika Asman <asmanodeny@gmail.com>
 //
 // Licensed under GPLv2 or later
 //

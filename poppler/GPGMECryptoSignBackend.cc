@@ -4,8 +4,9 @@
 //
 // This file is licensed under the GPLv2 or later
 //
-// Copyright 2023-2025 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
+// Copyright 2023-2026 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
 // Copyright 2025 Albert Astals Cid <aacid@kde.org>
+// Copyright 2026 Juraj Šarinay <juraj@sarinay.com>
 //========================================================================
 
 #include "CryptoSignBackend.h"

@@ -5,6 +5,7 @@
 // This file is licensed under the GPLv2 or later
 //
 // Copyright 2023-2025 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
+// Copyright 2026 Juraj Šarinay <juraj@sarinay.com>
 //========================================================================
 #ifndef GPGME_CRYPTO_SIGN_BACKEND_H
 #define GPGME_CRYPTO_SIGN_BACKEND_H

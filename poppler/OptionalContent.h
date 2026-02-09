@@ -8,6 +8,7 @@
 // Copyright 2018 Adam Reichold <adam.reichold@t-online.de>
 // Copyright 2019 Oliver Sander <oliver.sander@tu-dresden.de>
 // Copyright 2025 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
+// Copyright 2026 Adam Sampson <ats@offog.org>
 //
 // Released under the GPL (version 2, or later, at your option)
 //

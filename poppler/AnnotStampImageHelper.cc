@@ -5,6 +5,7 @@
 // Copyright (C) 2021 Mahmoud Ahmed Khalil <mahmoudkhalil11@gmail.com>
 // Copyright (C) 2021, 2025 Albert Astals Cid <aacid@kde.org>
 // Copyright (C) 2025, 2026 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
+// Copyright (C) 2026 Malika Asman <asmanodeny@gmail.com>
 //
 // Licensed under GPLv2 or later
 //

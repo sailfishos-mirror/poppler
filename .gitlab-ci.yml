@@ -110,9 +110,9 @@ build_ubuntu_22_04:
     - PKG_CONFIG="$(which pkg-config) --static" cmake -G Ninja ..
     - ninja
 
-build_mingw64_fedora43:
+build_mingw64_fedora44:
   stage: build
-  image: fedora:43
+  image: fedora:44
   before_script:
     - dnf install -y 'dnf-command(builddep)'
     - dnf builddep -y mingw64-poppler
@@ -122,9 +122,9 @@ build_mingw64_fedora43:
     - mingw64-cmake -DENABLE_NSS3=OFF -DENABLE_GPGME=OFF -G Ninja ..
     - ninja
 
-build_clazy_fedora43:
+build_clazy_fedora44:
   stage: build
-  image: fedora:43
+  image: fedora:44
   before_script:
     - dnf install -y 'dnf-command(builddep)'
     - dnf builddep -y poppler

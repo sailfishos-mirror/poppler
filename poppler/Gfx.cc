@@ -242,13 +242,10 @@ GfxResources::GfxResources(XRef *xrefA, Dict *resDictA, GfxResources *nextA) : g
 {
     if (resDictA) {
 
-        // build font dictionary
         std::unique_ptr<Dict> resDict = resDictA->copy(xref);
-        Ref fontDictRef;
-        const Object &fontDictObj = resDict->lookup("Font", &fontDictRef);
-        if (fontDictObj.isDict()) {
-            fonts = std::make_unique<GfxFontDict>(xref, fontDictRef, *fontDictObj.getDict());
-        }
+
+        // get Font dictionary
+        fontDict = resDict->lookup("Font", &fontDictRef);
 
         // get XObject dictionary
         xObjDict = resDict->lookup("XObject");
@@ -288,6 +285,9 @@ std::shared_ptr<GfxFont> GfxResources::doLookupFont(const char *name) const
     const GfxResources *resPtr;
 
     for (resPtr = this; resPtr; resPtr = resPtr->next) {
+        if (resPtr->fontDict.isDict() && !resPtr->fonts) {
+            resPtr->fonts = std::make_unique<GfxFontDict>(resPtr->xref, resPtr->fontDictRef, *resPtr->fontDict.getDict());
+        }
         if (resPtr->fonts) {
             if (std::shared_ptr<GfxFont> font = resPtr->fonts->lookup(name)) {
                 return font;

@@ -266,7 +266,6 @@ GfxResources::GfxResources(XRef *xrefA, Dict *resDictA, GfxResources *nextA) : g
         propertiesDict = resDict->lookup("Properties");
 
     } else {
-        fonts = nullptr;
         xObjDict.setToNull();
         colorSpaceDict.setToNull();
         patternDict.setToNull();

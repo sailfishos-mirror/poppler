@@ -6799,9 +6799,9 @@ void AnnotFileAttachment::initialize(Dict *dict)
 
     Object objName = dict->lookup("Name");
     if (objName.isName()) {
-        name = std::make_unique<GooString>(objName.getNameString());
+        iconName = std::make_unique<GooString>(objName.getNameString());
     } else {
-        name = std::make_unique<GooString>("PushPin");
+        iconName = std::make_unique<GooString>("PushPin");
     }
 }
 
@@ -6937,13 +6937,13 @@ void AnnotFileAttachment::draw(Gfx *gfx, bool printing)
         } else {
             appearBuilder.append("1 1 1 rg\n");
         }
-        if (!name->compare("PushPin")) {
+        if (!iconName->compare("PushPin")) {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_PUSHPIN);
-        } else if (!name->compare("Paperclip")) {
+        } else if (!iconName->compare("Paperclip")) {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_PAPERCLIP);
-        } else if (!name->compare("Graph")) {
+        } else if (!iconName->compare("Graph")) {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_GRAPH);
-        } else if (!name->compare("Tag")) {
+        } else if (!iconName->compare("Tag")) {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_TAG);
         }
         appearBuilder.append("Q\n");
@@ -6998,9 +6998,9 @@ void AnnotSound::initialize(Dict *dict)
 
     obj1 = dict->lookup("Name");
     if (obj1.isName()) {
-        name = std::make_unique<GooString>(obj1.getName());
+        iconName = std::make_unique<GooString>(obj1.getName());
     } else {
-        name = std::make_unique<GooString>("Speaker");
+        iconName = std::make_unique<GooString>("Speaker");
     }
 }
 
@@ -7088,9 +7088,9 @@ void AnnotSound::draw(Gfx *gfx, bool printing)
         } else {
             appearBuilder.append("1 1 1 rg\n");
         }
-        if (!name->compare("Speaker")) {
+        if (!iconName->compare("Speaker")) {
             appearBuilder.append(ANNOT_SOUND_AP_SPEAKER);
-        } else if (!name->compare("Mic")) {
+        } else if (!iconName->compare("Mic")) {
             appearBuilder.append(ANNOT_SOUND_AP_MIC);
         }
         appearBuilder.append("Q\n");

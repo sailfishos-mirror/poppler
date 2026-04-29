@@ -646,7 +646,7 @@ std::optional<CryptoSign::SigningErrorMessage> FormWidgetSignature::signDocument
 
     // Incremental save to avoid breaking any existing signatures
     if (doc->saveAs(saveFilename, writeForceIncremental) != errNone) {
-        error(errIO, -1, "signDocument: error saving to file \"{0:s}\"", saveFilename.c_str());
+        error(errIO, -1, "signDocument: error saving to file \"{0:r}\"", &saveFilename);
         return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::WriteFailed, .message = ERROR_IN_CODE_LOCATION };
     }
 
@@ -931,7 +931,7 @@ bool FormWidgetSignature::createSignature(Object &vObj, Ref vRef, const GooStrin
 {
     vObj.dictAdd("Type", Object(objName, "Sig"));
     vObj.dictAdd("Filter", Object(objName, "Adobe.PPKLite"));
-    vObj.dictAdd("SubFilter", Object(objName, toStdString(signatureType).c_str()));
+    vObj.dictAdd("SubFilter", Object(objName, std::string_view { toStdString(signatureType) }));
     vObj.dictAdd("Name", Object(name.copy()));
     vObj.dictAdd("M", Object(timeToDateString(nullptr)));
     if (reason && !reason->empty()) {
@@ -2742,20 +2742,20 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &fontFamil
 Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath, int faceIndex, const std::string &fontFamily, const std::string &fontStyle, bool fontSubstitutedIn, bool forceName)
 {
     if (!filepath.ends_with(".ttf") && !filepath.ends_with(".ttc") && !filepath.ends_with(".otf")) {
-        error(errIO, -1, "We only support embedding ttf/ttc/otf fonts for now. The font file for {0:s} {1:s} was {2:s}", fontFamily.c_str(), fontStyle.c_str(), filepath.c_str());
+        error(errIO, -1, "We only support embedding ttf/ttc/otf fonts for now. The font file for {0:r} {1:r} was {2:r}", &fontFamily, &fontStyle, &filepath);
         return {};
     }
 
     const FoFiIdentifierType fontFoFiType = FoFiIdentifier::identifyFile(filepath.c_str());
     if (fontFoFiType != fofiIdTrueType && fontFoFiType != fofiIdTrueTypeCollection && fontFoFiType != fofiIdOpenTypeCFF8Bit && fontFoFiType != fofiIdOpenTypeCFFCID) {
-        error(errIO, -1, "We only support embedding ttf/ttc/otf fonts for now. The font file for {0:s} {1:s} was {2:s} of type {3:d}", fontFamily.c_str(), fontStyle.c_str(), filepath.c_str(), fontFoFiType);
+        error(errIO, -1, "We only support embedding ttf/ttc/otf fonts for now. The font file for {0:r} {1:r} was {2:r} of type {3:d}", &fontFamily, &fontStyle, &filepath, fontFoFiType);
         return {};
     }
 
     const std::string fontFamilyAndStyle = fontStyle.empty() ? fontFamily : fontFamily + " " + fontStyle;
 
     if (forceName && defaultResources && defaultResources->lookupFont(fontFamilyAndStyle)) {
-        error(errInternal, -1, "Form::addFontToDefaultResources: Asked to forceName but font name exists {0:s}", fontFamilyAndStyle.c_str());
+        error(errInternal, -1, "Form::addFontToDefaultResources: Asked to forceName but font name exists {0:r}", &fontFamilyAndStyle);
         return {};
     }
 
@@ -2768,7 +2768,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
     Object fontDict(std::make_unique<Dict>(xref));
     fontDict.dictSet("Type", Object(objName, "Font"));
     fontDict.dictSet("Subtype", Object(objName, (embedActualFont ? "Type0" : "Type1")));
-    fontDict.dictSet("BaseFont", Object(objName, fontFamilyAndStyle.c_str()));
+    fontDict.dictSet("BaseFont", Object(objName, std::string_view { fontFamilyAndStyle }));
 
     if (embedActualFont) {
         fontDict.dictSet("Encoding", Object(objName, "Identity-H"));
@@ -2778,7 +2778,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
         std::unique_ptr<Dict> descendantFont = std::make_unique<Dict>(xref);
         descendantFont->set("Type", Object(objName, "Font"));
         descendantFont->set("Subtype", Object(objName, isTrueType ? "CIDFontType2" : "CIDFontType0"));
-        descendantFont->set("BaseFont", Object(objName, fontFamilyAndStyle.c_str()));
+        descendantFont->set("BaseFont", Object(objName, std::string_view { fontFamilyAndStyle }));
 
         {
             // We only support fonts with identity cmaps for now
@@ -2798,20 +2798,20 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
 
         FT_Face face;
         if (ft_new_face_from_file(freetypeLib, filepath.c_str(), faceIndex, &face)) {
-            error(errIO, -1, "ft_new_face_from_file failed for {0:s}", filepath.c_str());
+            error(errIO, -1, "ft_new_face_from_file failed for {0:r}", &filepath);
             return {};
         }
         const std::unique_ptr<FT_Face, void (*)(FT_Face *)> faceDeleter(&face, [](FT_Face *f) { FT_Done_Face(*f); });
 
         if (FT_Set_Char_Size(face, 1000, 1000, 0, 0)) {
-            error(errIO, -1, "FT_Set_Char_Size failed for {0:s}", filepath.c_str());
+            error(errIO, -1, "FT_Set_Char_Size failed for {0:r}", &filepath);
             return {};
         }
 
         {
             std::unique_ptr<Dict> fontDescriptor = std::make_unique<Dict>(xref);
             fontDescriptor->set("Type", Object(objName, "FontDescriptor"));
-            fontDescriptor->set("FontName", Object(objName, fontFamilyAndStyle.c_str()));
+            fontDescriptor->set("FontName", Object(objName, std::string_view { fontFamilyAndStyle }));
 
             // a bit arbirary but the Flags field is mandatory...
             const std::string lowerCaseFontFamily = GooString::toLowerCase(fontFamily);
@@ -2835,24 +2835,24 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
             {
                 const std::unique_ptr<GooFile> file(GooFile::open(filepath));
                 if (!file) {
-                    error(errIO, -1, "Failed to open {0:s}", filepath.c_str());
+                    error(errIO, -1, "Failed to open {0:r}", &filepath);
                     return {};
                 }
                 const Goffset fileSize = file->size();
                 if (fileSize < 0) {
-                    error(errIO, -1, "Failed to get file size for {0:s}", filepath.c_str());
+                    error(errIO, -1, "Failed to get file size for {0:r}", &filepath);
                     return {};
                 }
                 // GooFile::read only takes an integer so for now we don't support huge fonts
                 if (fileSize > std::numeric_limits<int>::max()) {
-                    error(errIO, -1, "Font size is too big {0:s}", filepath.c_str());
+                    error(errIO, -1, "Font size is too big {0:r}", &filepath);
                     return {};
                 }
                 std::vector<char> data;
                 data.resize(fileSize);
                 const Goffset bytesRead = file->read(data.data(), static_cast<int>(fileSize), 0);
                 if (bytesRead != fileSize) {
-                    error(errIO, -1, "Failed to read contents of {0:s}", filepath.c_str());
+                    error(errIO, -1, "Failed to read contents of {0:r}", &filepath);
                     return {};
                 }
 
@@ -2882,7 +2882,7 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
                 unicodeBMPCMap = fft->findCmap(3, 1);
             }
             if (unicodeBMPCMap < 0) {
-                error(errIO, -1, "Font does not have an unicode BMP cmap {0:s}", filepath.c_str());
+                error(errIO, -1, "Font does not have an unicode BMP cmap {0:r}", &filepath);
                 return {};
             }
 

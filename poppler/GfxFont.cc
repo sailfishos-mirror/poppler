@@ -409,8 +409,9 @@ GfxFontType GfxFont::getFontType(XRef *xref, const Dict &fontDict, Ref *embID)
         Object obj3(*embID);
         Object obj4 = obj3.fetch(xref);
         if (obj4.isStream() && obj4.streamRewind()) {
-            fft = FoFiIdentifier::identifyStream(&readFromStream, obj4.getStream());
-            obj4.streamClose();
+            Stream *obj4Stream = obj4.getStream();
+            fft = FoFiIdentifier::identifyStream(&readFromStream, obj4Stream);
+            obj4Stream->close();
             switch (fft) {
             case fofiIdType1PFA:
             case fofiIdType1PFB:
@@ -597,9 +598,10 @@ std::unique_ptr<CharCodeToUnicode> GfxFont::readToUnicodeCMap(const Dict &fontDi
     if (!obj1.isStream()) {
         return ctu;
     }
+    Stream *toUnicodeStream = obj1.getStream();
     std::string buf;
-    obj1.getStream()->fillString(buf);
-    obj1.streamClose();
+    toUnicodeStream->fillString(buf);
+    toUnicodeStream->close();
     if (ctu) {
         ctu->mergeCMap(buf, nBits);
     } else {

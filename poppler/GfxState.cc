@@ -2396,14 +2396,15 @@ std::unique_ptr<GfxColorSpace> GfxIndexedColorSpace::parse(GfxResources *res, co
     obj1 = arr.get(3);
     const int n = cs->getBase()->getNComps();
     if (obj1.isStream() && obj1.streamRewind()) {
+        Stream *stream = obj1.getStream();
         for (i = 0; i <= indexHighA; ++i) {
-            const int readChars = obj1.streamGetChars(n, &cs->lookup[i * n]);
+            const int readChars = stream->doGetChars(n, &cs->lookup[i * n]);
             for (j = readChars; j < n; ++j) {
                 error(errSyntaxWarning, -1, "Bad Indexed color space (lookup table stream too short) padding with zeroes");
                 cs->lookup[i * n + j] = 0;
             }
         }
-        obj1.streamClose();
+        stream->close();
     } else if (obj1.isString()) {
         if (obj1.getString().size() < static_cast<size_t>(indexHighA + 1) * n) {
             error(errSyntaxWarning, -1, "Bad Indexed color space (lookup table string too short)");

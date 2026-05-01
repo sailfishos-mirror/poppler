@@ -1544,12 +1544,6 @@ inline bool Object::streamRewind()
     return std::get<std::shared_ptr<Stream>>(data)->rewind();
 }
 
-inline void Object::streamClose()
-{
-    OBJECT_TYPE_CHECK(objStream);
-    std::get<std::shared_ptr<Stream>>(data)->close();
-}
-
 inline int Object::streamGetChar()
 {
     OBJECT_TYPE_CHECK(objStream);

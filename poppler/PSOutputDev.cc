@@ -2201,7 +2201,7 @@ void PSOutputDev::setupEmbeddedType1Font(Ref *id, GooString *psName)
 
 err1:
     if (strObj.isStream()) {
-        strObj.streamClose();
+        strObj.getStream()->close();
     }
 }
 

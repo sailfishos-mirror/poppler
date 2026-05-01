@@ -106,7 +106,7 @@ Lexer::Lexer(XRef *xrefA, Object *obj)
 Lexer::~Lexer()
 {
     if (curStr.isStream()) {
-        curStr.streamClose();
+        curStr.getStream()->close();
     }
     if (freeArray) {
         delete streams;
@@ -128,7 +128,7 @@ int Lexer::getChar(bool comesFromLook)
         if (comesFromLook) {
             return EOF;
         }
-        curStr.streamClose();
+        curStr.getStream()->close();
         curStr = Object();
         ++strPtr;
         if (strPtr < streams->getLength()) {

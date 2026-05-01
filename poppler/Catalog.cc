@@ -173,13 +173,14 @@ std::unique_ptr<GooString> Catalog::readMetadata()
     if (!metadata.isStream()) {
         return {};
     }
-    Object obj = metadata.streamGetDict()->lookup("Subtype");
+    Stream *metadataStream = metadata.getStream();
+    Object obj = metadataStream->getDict()->lookup("Subtype");
     if (!obj.isName("XML")) {
         error(errSyntaxWarning, -1, "Unknown Metadata type: '{0:s}'", obj.isName() ? obj.getName() : "???");
     }
     std::unique_ptr<GooString> s = std::make_unique<GooString>();
-    metadata.getStream()->fillGooString(s.get());
-    metadata.streamClose();
+    metadataStream->fillGooString(s.get());
+    metadataStream->close();
     return s;
 }
 

@@ -195,7 +195,7 @@ GfxFontLoc &GfxFontLoc::operator=(GfxFontLoc &&other) noexcept = default;
 // GfxFont
 //------------------------------------------------------------------------
 
-std::unique_ptr<GfxFont> GfxFont::makeFont(XRef *xref, const char *tagA, Ref idA, const Dict &fontDict)
+std::unique_ptr<GfxFont> GfxFont::makeFont(XRef *xref, std::string_view tagA, Ref idA, const Dict &fontDict)
 {
     std::optional<std::string> name;
     Ref embFontIDA;
@@ -235,7 +235,7 @@ std::unique_ptr<GfxFont> GfxFont::makeFont(XRef *xref, const char *tagA, Ref idA
     return std::make_unique<GfxCIDFont>(tagA, idA, std::move(name), typeA, embFontIDA, fontDict);
 }
 
-GfxFont::GfxFont(const char *tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA) : tag(tagA), id(idA), name(std::move(nameA)), type(typeA)
+GfxFont::GfxFont(std::string_view tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA) : tag(tagA), id(idA), name(std::move(nameA)), type(typeA)
 {
     ok = false;
     embFontID = embFontIDA;
@@ -942,7 +942,7 @@ static bool testForNumericNames(const Dict &fontDict, bool hex)
     return numeric;
 }
 
-Gfx8BitFont::Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict) : GfxFont(tagA, idA, std::move(nameA), typeA, embFontIDA)
+Gfx8BitFont::Gfx8BitFont(XRef *xref, std::string_view tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict) : GfxFont(tagA, idA, std::move(nameA), typeA, embFontIDA)
 {
     const BuiltinFont *builtinFont;
     bool baseEncFromFontFile;
@@ -1692,7 +1692,7 @@ struct cmpWidthExcepVFunctor
     bool operator()(const GfxFontCIDWidthExcepV &w1, const GfxFontCIDWidthExcepV &w2) { return w1.first < w2.first; }
 };
 
-GfxCIDFont::GfxCIDFont(const char *tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict) : GfxFont(tagA, idA, std::move(nameA), typeA, embFontIDA)
+GfxCIDFont::GfxCIDFont(std::string_view tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict) : GfxFont(tagA, idA, std::move(nameA), typeA, embFontIDA)
 {
     Dict *desFontDict;
     Object desFontDictObj;

@@ -3061,7 +3061,7 @@ std::unique_ptr<DefaultAppearance> AnnotFreeText::getDefaultAppearance() const
     return std::make_unique<DefaultAppearance>(appearanceString.get());
 }
 
-static std::unique_ptr<GfxFont> createAnnotDrawFont(XRef *xref, Dict *fontParentDict, const char *resourceName = "AnnotDrawFont", const char *fontname = "Helvetica")
+static std::unique_ptr<GfxFont> createAnnotDrawFont(XRef *xref, Dict *fontParentDict, std::string_view resourceName = "AnnotDrawFont", const char *fontname = "Helvetica")
 {
     const Ref dummyRef = { .num = -1, .gen = -1 };
 
@@ -3380,7 +3380,7 @@ void AnnotFreeText::generateFreeTextAppearance()
             Object fontDictionary = fontResources.getDict()->lookup(da.getFontName(), &fontReference);
 
             if (fontDictionary.isDict()) {
-                font = GfxFont::makeFont(doc->getXRef(), da.getFontName().c_str(), fontReference, *fontDictionary.getDict());
+                font = GfxFont::makeFont(doc->getXRef(), da.getFontName(), fontReference, *fontDictionary.getDict());
             } else {
                 error(errSyntaxWarning, -1, "Font dictionary is not a dictionary");
             }
@@ -3390,7 +3390,7 @@ void AnnotFreeText::generateFreeTextAppearance()
     // if fontname is not in the default resources, create a Helvetica fake font
     if (!font) {
         auto fontResDict = std::make_unique<Dict>(doc->getXRef());
-        font = createAnnotDrawFont(doc->getXRef(), fontResDict.get(), da.getFontName().c_str());
+        font = createAnnotDrawFont(doc->getXRef(), fontResDict.get(), da.getFontName());
         resourceObj = Object(std::move(fontResDict));
     }
 
@@ -4623,8 +4623,7 @@ bool AnnotAppearanceBuilder::drawText(const GooString *text, const Form *form, c
                     // and sometimes not, depending on whether the call to lookupFont above fails.
                     // When the code path right here is taken, the destructor of fontToFree
                     // (which is a std::unique_ptr) will delete the font object at the end of this method.
-                    const char *fontNameC = fontName.data();
-                    fontToFree = createAnnotDrawFont(xref, resourcesDict, fontNameC, fallback);
+                    fontToFree = createAnnotDrawFont(xref, resourcesDict, fontName, fallback);
                     font = fontToFree.get();
                     if (font && forceZapfDingbats) {
                         addedDingbatsResource = true;
@@ -4933,8 +4932,7 @@ bool AnnotAppearanceBuilder::drawListBox(const FormFieldChoice *fieldChoice, con
                     // and sometimes not, depending on whether the call to lookupFont above fails.
                     // When the code path right here is taken, the destructor of fontToFree
                     // (which is a std::unique_ptr) will delete the font object at the end of this method.
-                    const char *fontNameC = fontName.data();
-                    fontToFree = createAnnotDrawFont(xref, resourcesDict, fontNameC, fallback);
+                    fontToFree = createAnnotDrawFont(xref, resourcesDict, fontName, fallback);
                     font = fontToFree.get();
                 } else {
                     error(errSyntaxError, -1, "Unknown font in field's DA string");
@@ -5351,7 +5349,7 @@ void AnnotAppearanceBuilder::drawSignatureFieldText(const std::string &text, con
     // create a Helvetica fake font
     std::shared_ptr<const GfxFont> font = form ? form->getDefaultResources()->lookupFont(da.getFontName()) : nullptr;
     if (!font) {
-        font = createAnnotDrawFont(xref, resourcesDict, da.getFontName().c_str());
+        font = createAnnotDrawFont(xref, resourcesDict, da.getFontName());
     }
 
     // Setup text clipping

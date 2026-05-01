@@ -183,7 +183,7 @@ public:
     };
 
     // Build a GfxFont object.
-    static std::unique_ptr<GfxFont> makeFont(XRef *xref, const char *tagA, Ref idA, const Dict &fontDict);
+    static std::unique_ptr<GfxFont> makeFont(XRef *xref, std::string_view tagA, Ref idA, const Dict &fontDict);
 
     GfxFont(const GfxFont &) = delete;
     GfxFont &operator=(const GfxFont &other) = delete;
@@ -305,7 +305,7 @@ public:
     static bool isBase14Font(std::string_view family, std::string_view style);
 
 protected:
-    GfxFont(const char *tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA);
+    GfxFont(std::string_view tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA);
 
     static GfxFontType getFontType(XRef *xref, const Dict &fontDict, Ref *embID);
     void readFontDescriptor(const Dict &fontDict);
@@ -339,7 +339,7 @@ protected:
 class POPPLER_PRIVATE_EXPORT Gfx8BitFont : public GfxFont
 {
 public:
-    Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict);
+    Gfx8BitFont(XRef *xref, std::string_view tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict);
 
     int getNextChar(const char *s, int len, CharCode *code, Unicode const **u, int *uLen, double *dx, double *dy, double *ox, double *oy) const override;
 
@@ -399,7 +399,7 @@ private:
 class POPPLER_PRIVATE_EXPORT GfxCIDFont : public GfxFont
 {
 public:
-    GfxCIDFont(const char *tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict);
+    GfxCIDFont(std::string_view tagA, Ref idA, std::optional<std::string> &&nameA, GfxFontType typeA, Ref embFontIDA, const Dict &fontDict);
 
     bool isCIDFont() const override { return true; }
 

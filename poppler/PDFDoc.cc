@@ -1590,14 +1590,14 @@ Object PDFDoc::createTrailerDict(int uxrefSize, bool incrUpdate, Goffset startxR
             auto array = std::make_unique<Array>(xRef);
             // Get the first part of the ID
             array->add(obj4.arrayGet(0));
-            array->add(Object(std::make_unique<GooString>(reinterpret_cast<const char *>(digest), 16)));
+            array->add(Object(std::string(reinterpret_cast<const char *>(digest), 16)));
             trailerDict->set("ID", Object(std::move(array)));
         }
     } else {
         // new file => same values for the two identifiers
         auto array = std::make_unique<Array>(xRef);
-        array->add(Object(std::make_unique<GooString>(reinterpret_cast<const char *>(digest), 16)));
-        array->add(Object(std::make_unique<GooString>(reinterpret_cast<const char *>(digest), 16)));
+        array->add(Object(std::string(reinterpret_cast<const char *>(digest), 16)));
+        array->add(Object(std::string(reinterpret_cast<const char *>(digest), 16)));
         trailerDict->set("ID", Object(std::move(array)));
     }
 
@@ -2221,8 +2221,7 @@ std::variant<PDFDoc::SignatureData, CryptoSign::SigningErrorMessage> PDFDoc::cre
         }
 
         const DefaultAppearance da { pdfFontName, fontSize, std::move(fontColor) };
-        const std::string daStr = da.toAppearanceString();
-        annotObj.dictSet("DA", Object(std::make_unique<GooString>(daStr)));
+        annotObj.dictSet("DA", Object(da.toAppearanceString()));
 
         form->ensureFontsForAllCharacters(&signatureText, pdfFontName);
         form->ensureFontsForAllCharacters(&signatureTextLeft, pdfFontName);

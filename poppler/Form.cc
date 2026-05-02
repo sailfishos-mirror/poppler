@@ -1716,7 +1716,7 @@ void FormFieldText::setContent(std::unique_ptr<GooString> new_content)
         }
     }
 
-    obj.getDict()->set("V", Object(content ? content->copy() : std::make_unique<GooString>("")));
+    obj.getDict()->set("V", Object(content ? std::string { content->toStr() } : std::string()));
     xref->setModifiedObject(&obj, ref);
     updateChildrenAppearance();
 }
@@ -2032,7 +2032,7 @@ void FormFieldChoice::updateSelection()
 
         if (numSelected == 0) {
             // No options are selected
-            objV = Object(std::make_unique<GooString>(""));
+            objV = Object(std::string());
         } else if (numSelected == 1) {
             // Only one option is selected
             for (int i = 0; i < numChoices; i++) {
@@ -2783,8 +2783,8 @@ Form::AddFontResult Form::addFontToDefaultResources(const std::string &filepath,
         {
             // We only support fonts with identity cmaps for now
             auto cidSystemInfo = std::make_unique<Dict>(xref);
-            cidSystemInfo->set("Registry", Object(std::make_unique<GooString>("Adobe")));
-            cidSystemInfo->set("Ordering", Object(std::make_unique<GooString>("Identity")));
+            cidSystemInfo->set("Registry", Object(std::string { "Adobe" }));
+            cidSystemInfo->set("Ordering", Object(std::string { "Identity" }));
             cidSystemInfo->set("Supplement", Object(0));
             descendantFont->set("CIDSystemInfo", Object(std::move(cidSystemInfo)));
         }

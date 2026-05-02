@@ -1736,8 +1736,8 @@ GfxCIDFont::GfxCIDFont(std::string_view tagA, Ref idA, std::optional<std::string
         if (!obj2.isString() || !obj3.isString()) {
             error(errSyntaxError, -1, "Invalid CIDSystemInfo dictionary in Type 0 descendant font");
             error(errSyntaxError, -1, "Assuming Adobe-Identity for character collection");
-            obj2 = Object(std::make_unique<GooString>("Adobe"));
-            obj3 = Object(std::make_unique<GooString>("Identity"));
+            obj2 = Object(std::string { "Adobe" });
+            obj3 = Object(std::string { "Identity" });
         }
         collection = obj2.takeString();
         collection->push_back('-');

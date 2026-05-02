@@ -90,7 +90,7 @@ static void insertChildHelper(const std::string &itemTitle, int destPageNum, uns
 
     Object outlineItem = Object(std::make_unique<Dict>(xref));
 
-    outlineItem.dictSet("Title", Object(std::make_unique<GooString>(itemTitle)));
+    outlineItem.dictSet("Title", Object(std::string { itemTitle }));
     outlineItem.dictSet("Dest", Object(std::move(a)));
     outlineItem.dictSet("Count", Object(1));
     outlineItem.dictAdd("Parent", Object(parentObjRef));
@@ -299,7 +299,7 @@ int Outline::addOutlineTreeNodeList(const std::vector<OutlineTreeNode> &nodeList
         }
         lastRef = outlineItemRef;
 
-        outlineItem.dictSet("Title", Object(std::make_unique<GooString>(node.title)));
+        outlineItem.dictSet("Title", Object(std::string { node.title }));
         outlineItem.dictSet("Dest", Object(std::move(a)));
         itemCount++;
 

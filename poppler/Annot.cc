@@ -2882,7 +2882,7 @@ AnnotFreeText::AnnotFreeText(PDFDoc *docA, PDFRectangle *rectA) : AnnotMarkup(do
     type = typeFreeText;
 
     annotObj.dictSet("Subtype", Object(objName, "FreeText"));
-    annotObj.dictSet("DA", Object(std::make_unique<GooString>()));
+    annotObj.dictSet("DA", Object(std::string()));
 
     initialize(annotObj.getDict());
 }

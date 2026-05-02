@@ -255,7 +255,7 @@ public:
 
 private:
     bool parseCode(Stream *str, int *codePtr, int &recursionCounter);
-    std::unique_ptr<GooString> getToken(Stream *str);
+    std::string getToken(Stream *str);
     void resizeCode(int newSize);
     void exec(PSStack *stack, int codePtr) const;
 

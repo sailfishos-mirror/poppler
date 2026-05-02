@@ -222,8 +222,6 @@ public:
 
     explicit Object(double realA) : type { objReal }, data { realA } { }
 
-    explicit Object(std::unique_ptr<GooString> stringA) : type { objString }, data { std::move(stringA->toNonConstStr()) } { assert(stringA); }
-
     explicit Object(std::string &&stringA) : type { objString }, data { std::move(stringA) } { }
 
     Object(ObjType typeA, std::string &&stringA) : type { typeA }, data { std::move(stringA) } { assert(typeA == objHexString); }

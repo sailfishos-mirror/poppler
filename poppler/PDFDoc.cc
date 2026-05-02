@@ -726,7 +726,7 @@ void PDFDoc::setDocInfoStringEntry(const char *key, std::unique_ptr<GooString> v
     if (removeEntry) {
         infoObj.dictSet(key, Object::null());
     } else {
-        infoObj.dictSet(key, Object(std::move(value)));
+        infoObj.dictSet(key, Object(std::move(value->toNonConstStr())));
     }
 
     if (infoObj.dictGetLength() == 0) {
@@ -2206,7 +2206,7 @@ std::variant<PDFDoc::SignatureData, CryptoSign::SigningErrorMessage> PDFDoc::cre
     annotObj.dictSet("Type", Object(objName, "Annot"));
     annotObj.dictSet("Subtype", Object(objName, "Widget"));
     annotObj.dictSet("FT", Object(objName, "Sig"));
-    annotObj.dictSet("T", Object(std::move(partialFieldName)));
+    annotObj.dictSet("T", Object(std::move(partialFieldName->toNonConstStr())));
     auto rectArray = std::make_unique<Array>(getXRef());
     rectArray->add(Object(rect.x1));
     rectArray->add(Object(rect.y1));

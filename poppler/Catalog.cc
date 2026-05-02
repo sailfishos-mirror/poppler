@@ -566,7 +566,7 @@ void Catalog::addEmbeddedFile(GooFile *file, const std::string &fileName)
             // If the new name is the same lexicographically than an existing file then don't add the existing file (i.e. replace)
             continue;
         }
-        embeddedFilesNamesArray->add(Object(efNameI->copy()));
+        embeddedFilesNamesArray->add(Object(std::string { efNameI->toStr() }));
         embeddedFilesNamesArray->add(ef->getValue(i)->copy());
     }
 

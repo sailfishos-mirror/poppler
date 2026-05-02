@@ -1482,7 +1482,7 @@ void Annot::update(const char *key, Object &&value)
     if (strcmp(key, "M") != 0) {
         modified = timeToDateString(nullptr);
 
-        annotObj.dictSet("M", Object(modified->copy()));
+        annotObj.dictSet("M", Object(std::string { modified->toStr() }));
     }
 
     annotObj.dictSet(const_cast<char *>(key), std::move(value));
@@ -1506,7 +1506,7 @@ void Annot::setContents(std::unique_ptr<GooString> &&new_content)
         contents = std::make_unique<GooString>();
     }
 
-    update("Contents", Object(contents->copy()));
+    update("Contents", Object(std::string { contents->toStr() }));
 }
 
 void Annot::setName(GooString *new_name)
@@ -1519,7 +1519,7 @@ void Annot::setName(GooString *new_name)
         name = std::make_unique<GooString>();
     }
 
-    update("NM", Object(name->copy()));
+    update("NM", Object(std::string { name->toStr() }));
 }
 
 void Annot::setModified(std::unique_ptr<GooString> new_modified)
@@ -1528,7 +1528,7 @@ void Annot::setModified(std::unique_ptr<GooString> new_modified)
 
     if (new_modified) {
         modified = std::move(new_modified);
-        update("M", Object(modified->copy()));
+        update("M", Object(std::string { modified->toStr() }));
     } else {
         modified.reset(nullptr);
         update("M", Object::null());
@@ -2215,7 +2215,7 @@ void AnnotMarkup::setLabel(std::unique_ptr<GooString> &&new_label)
         label = std::make_unique<GooString>();
     }
 
-    update("T", Object(label->copy()));
+    update("T", Object(std::string { label->toStr() }));
 }
 
 void AnnotMarkup::setPopup(std::shared_ptr<AnnotPopup> new_popup)
@@ -2262,7 +2262,7 @@ void AnnotMarkup::setDate(std::unique_ptr<GooString> new_date)
 {
     if (new_date) {
         date = std::move(new_date);
-        update("CreationDate", Object(date->copy()));
+        update("CreationDate", Object(std::string { date->toStr() }));
     } else {
         date.reset(nullptr);
         update("CreationDate", Object::null());
@@ -2987,7 +2987,7 @@ void AnnotFreeText::setDefaultAppearance(const DefaultAppearance &da)
 {
     appearanceString = std::make_unique<GooString>(da.toAppearanceString());
 
-    update("DA", Object(appearanceString->copy()));
+    update("DA", Object(std::string { appearanceString->toStr() }));
     invalidateAppearance();
 }
 
@@ -3010,7 +3010,7 @@ void AnnotFreeText::setStyleString(GooString *new_string)
         styleString = std::make_unique<GooString>();
     }
 
-    update("DS", Object(styleString->copy()));
+    update("DS", Object(std::string { styleString->toStr() }));
 }
 
 void AnnotFreeText::setCalloutLine(std::unique_ptr<AnnotCalloutLine> &&line)
@@ -6767,7 +6767,7 @@ AnnotFileAttachment::AnnotFileAttachment(PDFDoc *docA, PDFRectangle *rectA, GooS
     type = typeFileAttachment;
 
     annotObj.dictSet("Subtype", Object(objName, "FileAttachment"));
-    annotObj.dictSet("FS", Object(filename->copy()));
+    annotObj.dictSet("FS", Object(std::string { filename->toStr() }));
 
     initialize(annotObj.getDict());
 }

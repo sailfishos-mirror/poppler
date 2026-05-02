@@ -493,9 +493,8 @@ void OutlineItem::open()
 void OutlineItem::setTitle(const std::string &titleA)
 {
     Object dict = xref->fetch(ref);
-    auto g = std::make_unique<GooString>(titleA);
-    title = TextStringToUCS4(g->toStr());
-    dict.dictSet("Title", Object(std::move(g)));
+    title = TextStringToUCS4(titleA);
+    dict.dictSet("Title", Object(std::string { titleA }));
     xref->setModifiedObject(&dict, ref);
 }
 

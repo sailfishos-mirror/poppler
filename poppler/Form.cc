@@ -932,13 +932,13 @@ bool FormWidgetSignature::createSignature(Object &vObj, Ref vRef, const GooStrin
     vObj.dictAdd("Type", Object(objName, "Sig"));
     vObj.dictAdd("Filter", Object(objName, "Adobe.PPKLite"));
     vObj.dictAdd("SubFilter", Object(objName, std::string_view { toStdString(signatureType) }));
-    vObj.dictAdd("Name", Object(name.copy()));
-    vObj.dictAdd("M", Object(timeToDateString(nullptr)));
+    vObj.dictAdd("Name", Object(std::string { name.toStr() }));
+    vObj.dictAdd("M", Object(std::string { timeToDateString(nullptr)->toStr() }));
     if (reason && !reason->empty()) {
-        vObj.dictAdd("Reason", Object(reason->copy()));
+        vObj.dictAdd("Reason", Object(std::string { reason->toStr() }));
     }
     if (location && !location->empty()) {
-        vObj.dictAdd("Location", Object(location->copy()));
+        vObj.dictAdd("Location", Object(std::string { location->toStr() }));
     }
 
     vObj.dictAdd("Contents", Object(objHexString, std::string(placeholderLength, '\0')));
@@ -1119,7 +1119,7 @@ void FormField::setPartialName(const GooString &name)
 {
     partialName = name.copy();
 
-    obj.getDict()->set("T", Object(name.copy()));
+    obj.getDict()->set("T", Object(std::string { name.toStr() }));
     xref->setModifiedObject(&obj, ref);
 }
 
@@ -1780,7 +1780,7 @@ void FormFieldText::setTextFontSize(int fontSize)
                 defaultAppearance->append(daToks[i]);
             }
         }
-        obj.dictSet("DA", Object(defaultAppearance->copy()));
+        obj.dictSet("DA", Object(std::string { defaultAppearance->toStr() }));
         xref->setModifiedObject(&obj, ref);
         updateChildrenAppearance();
     }
@@ -2021,7 +2021,7 @@ void FormFieldChoice::updateSelection()
 
     if (edit && editedChoice) {
         // This is an editable combo-box with user-entered text
-        objV = Object(editedChoice->copy());
+        objV = Object(std::string { editedChoice->toStr() });
     } else {
         const int numSelected = getNumSelected();
 
@@ -2042,9 +2042,9 @@ void FormFieldChoice::updateSelection()
                     }
 
                     if (choices[i].exportVal) {
-                        objV = Object(choices[i].exportVal->copy());
+                        objV = Object(std::string { choices[i].exportVal->toStr() });
                     } else if (choices[i].optionName) {
-                        objV = Object(choices[i].optionName->copy());
+                        objV = Object(std::string { choices[i].optionName->toStr() });
                     }
 
                     break; // We've just written the selected option. No need to keep on scanning
@@ -2060,9 +2060,9 @@ void FormFieldChoice::updateSelection()
                     }
 
                     if (choices[i].exportVal) {
-                        objV.arrayAdd(Object(choices[i].exportVal->copy()));
+                        objV.arrayAdd(Object(std::string { choices[i].exportVal->toStr() }));
                     } else if (choices[i].optionName) {
-                        objV.arrayAdd(Object(choices[i].optionName->copy()));
+                        objV.arrayAdd(Object(std::string { choices[i].optionName->toStr() }));
                     }
                 }
             }

@@ -14,7 +14,7 @@
 // under GPL version 2 or later
 //
 // Copyright (C) 2005 Kristian Høgsberg <krh@redhat.com>
-// Copyright (C) 2005-2013, 2015, 2017-2025 Albert Astals Cid <aacid@kde.org>
+// Copyright (C) 2005-2013, 2015, 2017-2026 Albert Astals Cid <aacid@kde.org>
 // Copyright (C) 2005 Jeff Muizelaar <jrmuizel@nit.ca>
 // Copyright (C) 2005 Jonathan Blandford <jrb@redhat.com>
 // Copyright (C) 2005 Marco Pesenti Gritti <mpg@redhat.com>
@@ -46,6 +46,7 @@
 // Copyright (C) 2025 Aaron Nguyen <aaron.nguyen@veeva.com>
 // Copyright (C) 2025 Trystan Mata <trystan.mata@tytanium.xyz>
 // Copyright (C) 2026 Adam Sampson <ats@offog.org>
+// Copyright (C) 2026 Stefan Brüns <stefan.bruens@rwth-aachen.de>
 //
 // To see a description of the changes please see the Changelog file that
 // came with your tarball or type make ChangeLog if you are building from git

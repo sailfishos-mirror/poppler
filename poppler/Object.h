@@ -514,7 +514,6 @@ public:
     // Stream accessors.
     [[nodiscard]] bool streamRewind();
     int streamGetChar();
-    int streamGetChars(int nChars, unsigned char *buffer);
     Dict *streamGetDict() const;
 
     // Output.

@@ -1550,12 +1550,6 @@ inline int Object::streamGetChar()
     return std::get<std::shared_ptr<Stream>>(data)->getChar();
 }
 
-inline int Object::streamGetChars(int nChars, unsigned char *buffer)
-{
-    OBJECT_TYPE_CHECK(objStream);
-    return std::get<std::shared_ptr<Stream>>(data)->doGetChars(nChars, buffer);
-}
-
 inline Dict *Object::streamGetDict() const
 {
     OBJECT_TYPE_CHECK(objStream);

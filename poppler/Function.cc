@@ -978,7 +978,7 @@ public:
             error(errSyntaxError, -1, "Stack underflow in PostScript function");
             return;
         }
-        if (unlikely(sp + i + 1 < 0)) {
+        if (unlikely(i < 0)) {
             error(errSyntaxError, -1, "Stack overflow in PostScript function");
             return;
         }

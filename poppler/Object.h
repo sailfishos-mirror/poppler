@@ -515,7 +515,6 @@ public:
     [[nodiscard]] bool streamRewind();
     int streamGetChar();
     int streamGetChars(int nChars, unsigned char *buffer);
-    void streamSetPos(Goffset pos, int dir = 0);
     Dict *streamGetDict() const;
 
     // Output.

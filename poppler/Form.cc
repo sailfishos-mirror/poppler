@@ -41,6 +41,7 @@
 // Copyright 2025, 2026 Juraj Šarinay <juraj@sarinay.com>
 // Copyright 2025 Blair Bonnett <blair.bonnett@gmail.com>
 // Copyright (C) 2025 Jonathan Hähne <jonathan.haehne@hotmail.com>
+// Copyright (C) 2026 Stefan Brüns <stefan.bruens@rwth-aachen.de>
 //
 //========================================================================
 

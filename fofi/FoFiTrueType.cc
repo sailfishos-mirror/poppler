@@ -1204,7 +1204,11 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc, void *outputStream, const
             checksum = 0;
             const int glyfPos = tables[seekTable("glyf")].offset;
             for (int j = 0; j < nGlyphs; ++j) {
-                length += locaTable[j].len;
+                if (unlikely(checkedAdd(length, locaTable[j].len, &length))) {
+                    error(errSyntaxError, -1, "Integer overflow in glyph table length calculation");
+                    ok = false;
+                    break;
+                }
                 if (length & 3) {
                     length += 4 - (length & 3);
                 }

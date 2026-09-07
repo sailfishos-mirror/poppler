@@ -640,6 +640,9 @@ static std::unique_ptr<X509CertificateInfo> getCertificateInfoFromCERT(CERTCerti
     certInfo->setKeyUsageExtensions(cert->keyUsage);
     certInfo->setCertificateDER(std::vector<unsigned char>(cert->derCert.data, cert->derCert.data + cert->derCert.len));
     certInfo->setIsSelfSigned(CERT_CompareName(&cert->subject, &cert->issuer) == SECEqual);
+    if (cert->slot) {
+        certInfo->setKeyLocation(PK11_IsHW(cert->slot) ? KeyLocation::HardwareToken : KeyLocation::Computer);
+    }
 
     return certInfo;
 }

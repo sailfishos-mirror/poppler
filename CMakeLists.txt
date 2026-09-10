@@ -59,6 +59,9 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 set(CMAKE_VERIFY_INTERFACE_HEADER_SETS ON)
 
+# We don't currently use modules, so no need to do the work for them
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 
 # command line switches
 option(ENABLE_UNSTABLE_API_ABI_HEADERS "Install API/ABI unstable xpdf headers." OFF)

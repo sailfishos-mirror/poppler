@@ -1265,8 +1265,9 @@ std::variant<std::vector<unsigned char>, CryptoSign::SigningErrorMessage> NSSSig
         return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::GenericError, .message = ERROR_IN_CODE_LOCATION };
     }
 
-    if (NSS_CMSEncoder_Finish(cms_ecx) != SECSuccess) {
-        return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::GenericError, .message = ERROR_IN_CODE_LOCATION };
+    auto finishResult = NSS_CMSEncoder_Finish(cms_ecx);
+    if (finishResult != SECSuccess) {
+        return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::GenericError, .message = ERROR_IN_CODE_LOCATION_WITH_CODE(PORT_GetError()) };
     }
 
     auto signature = std::vector<unsigned char>(cms_output.data, cms_output.data + cms_output.len);

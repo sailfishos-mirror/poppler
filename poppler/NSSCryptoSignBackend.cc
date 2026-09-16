@@ -1069,9 +1069,29 @@ void NSSSignatureVerification::validateCertificateAsync(std::chrono::system_cloc
         inParams[2].type = cert_pi_end;
     }
 
+    // Unfortunately NSS does not have a "can sign pdf files" usage so
+    // we are using a wider range of usages.
+    // These match what libreoffice does in securityenvironment_nssimpl.cxx
+    // (removing certificateUsageSSLServer, certificateUsageSSLCA because they seem to server-y)
+    // in a different order, we keep certificateUsageEmailSigner first for
+    // compatibility with ourselves in error reporting
+    constexpr std::array<SECCertificateUsage, 5> certificateUsages = {
+        certificateUsageEmailSigner,
+        certificateUsageEmailRecipient,
+        certificateUsageSSLClient,
+    };
+
     int result = 0;
-    if (CERT_PKIXVerifyCert(cert, certificateUsageEmailSigner, inParams, nullptr, CMSSignerInfo->cmsg->pwfn_arg) != SECSuccess) {
-        result = PORT_GetError();
+    bool hasFailed = false;
+    for (const SECCertificateUsage usage : certificateUsages) {
+        if (CERT_PKIXVerifyCert(cert, usage, inParams, nullptr, CMSSignerInfo->cmsg->pwfn_arg) == SECSuccess) {
+            result = 0;
+            break;
+        }
+        if (!hasFailed) {
+            result = PORT_GetError();
+            hasFailed = true;
+        }
     }
 
     // Here we are just faking the asynchronousness. It should

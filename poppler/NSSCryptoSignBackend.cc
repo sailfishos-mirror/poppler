@@ -1088,8 +1088,9 @@ void NSSSignatureVerification::validateCertificateAsync(std::chrono::system_cloc
             result = 0;
             break;
         }
-        if (!hasFailed) {
-            result = PORT_GetError();
+        const PRErrorCode err = PORT_GetError();
+        if (!hasFailed || err == SEC_ERROR_UNTRUSTED_ISSUER) {
+            result = err;
             hasFailed = true;
         }
     }

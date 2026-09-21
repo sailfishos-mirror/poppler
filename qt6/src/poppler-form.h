@@ -990,6 +990,8 @@ enum class CryptoSignBackendFeature
 /**
  * Queries if a backend supports or not supports a given feature.
  *
+ * For some features and backends, this can change on runtime depending on other settings
+ *
  * \since 23.06
  */
 bool POPPLER_QT6_EXPORT hasCryptoSignBackendFeature(CryptoSignBackend backend, CryptoSignBackendFeature feature);

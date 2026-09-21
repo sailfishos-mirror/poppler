@@ -1347,7 +1347,11 @@ static bool hasNSSBackendFeature(CryptoSignBackendFeature feature)
 {
     switch (feature) {
     case CryptoSignBackendFeature::BackendAsksPassphrase:
+#if ENABLE_NSS3
+        return NSSSignatureConfiguration::hasNSSPasswordCallback();
+#else
         return false;
+#endif
     }
     return false;
 }

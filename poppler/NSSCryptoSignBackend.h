@@ -137,6 +137,7 @@ public:
     static std::string getNSSDir();
 
     static void setNSSPasswordCallback(const std::function<char *(const char *)> &f);
+    static bool hasNSSPasswordCallback();
 
     NSSSignatureConfiguration() = delete;
 

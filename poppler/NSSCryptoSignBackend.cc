@@ -240,10 +240,15 @@ static Certificate::timePointSeconds fromPRTime(PRTime time)
     return Certificate::timePointSeconds { std::chrono::duration_cast<std::chrono::seconds>(std::chrono::microseconds { time }) };
 }
 
-// a dummy, actually
-static char *passwordCallback(PK11SlotInfo * /*slot*/, PRBool retry, void *arg)
+static std::function<char *(const char *)> PasswordFunction;
+
+static char *passwordCallback(PK11SlotInfo *slot, PRBool retry, void *arg)
 {
     if (retry) {
+        if (PasswordFunction) {
+            const char *name = PK11_GetTokenName(slot);
+            return PasswordFunction(name);
+        }
         return nullptr;
     }
     return PL_strdup(static_cast<char *>(arg));
@@ -776,11 +781,14 @@ std::string NSSSignatureConfiguration::getNSSDir()
     return sNssDir;
 }
 
-static std::function<char *(const char *)> PasswordFunction;
-
 void NSSSignatureConfiguration::setNSSPasswordCallback(const std::function<char *(const char *)> &f)
 {
     PasswordFunction = f;
+}
+
+bool NSSSignatureConfiguration::hasNSSPasswordCallback()
+{
+    return static_cast<bool>(PasswordFunction);
 }
 
 NSSSignatureVerification::NSSSignatureVerification(std::vector<unsigned char> &&p7data, CryptoSign::SignatureType subfilter) : p7(std::move(p7data)), type(subfilter)

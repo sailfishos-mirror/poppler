@@ -1075,7 +1075,7 @@ void NSSSignatureVerification::validateCertificateAsync(std::chrono::system_cloc
     // (removing certificateUsageSSLServer, certificateUsageSSLCA because they seem to server-y)
     // in a different order, we keep certificateUsageEmailSigner first for
     // compatibility with ourselves in error reporting
-    constexpr std::array<SECCertificateUsage, 5> certificateUsages = {
+    constexpr std::array<SECCertificateUsage, 3> certificateUsages = {
         certificateUsageEmailSigner,
         certificateUsageEmailRecipient,
         certificateUsageSSLClient,

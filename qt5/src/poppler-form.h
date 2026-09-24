@@ -963,7 +963,7 @@ public:
         WriteFailed, ///< Write failed (permissions, faulty disk, ...) \since 25.07
         UserCancelled, ///< User cancelled the process \since 25.07
         BadPassphrase, ///< User entered bad passphrase \since 25.07
-
+        UnsupportedSignatureType, ///< User asked for a signature type that the current backend/key combo can't deliver
     };
 
     /**

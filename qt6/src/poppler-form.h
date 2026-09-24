@@ -648,6 +648,17 @@ public:
      */
     KeyLocation keyLocation() const;
 
+    /**
+     * The various s/mime signature types that this certificate might succeed
+     * in making.
+     *
+     * Please note that supportedSMimeTypes::none is special and if it is in the list,
+     * it will be the only one, and can be interpreted as a 'give me .. something' value
+     * or this is not a SMime in \ref certificateType.
+     * \since 26.09
+     */
+    QVector<SMimeSignatureType> supportedSMimeSignatureTypes() const;
+
     CertificateInfo(const CertificateInfo &other);
     CertificateInfo &operator=(const CertificateInfo &other);
 
@@ -922,6 +933,7 @@ public:
         WriteFailed, ///< Write failed (permissions, faulty disk, ...) \since 24.12
         UserCancelled, ///< User cancelled the process \since 24.12
         BadPassphrase, ///< Passphrase didn't work \since 25.03
+        UnsupportedSignatureType, ///< User asked for a signature type that the current backend/key combo can't deliver \since 26.09
     };
 
     /**

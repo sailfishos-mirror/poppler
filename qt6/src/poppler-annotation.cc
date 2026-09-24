@@ -3091,6 +3091,8 @@ SignatureAnnotation::SigningResult SignatureAnnotation::sign(const QString &outp
         return UserCancelled;
     case FormFieldSignature::BadPassphrase:
         return BadPassphrase;
+    case FormFieldSignature::UnsupportedSignatureType:
+        return UnsupportedSignatureType;
     }
     return GenericSigningError;
 }

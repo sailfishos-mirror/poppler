@@ -21,6 +21,7 @@
 // Copyright 2023-2026 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
 // Copyright 2023 Ingo Klöcker <kloecker@kde.org>
 // Copyright 2025, 2026 Juraj Šarinay <juraj@sarinay.com>
+// Copyright 2026 Sune Stolborg Vuorela <sune@vuorela.dk>, work sponsored by the Direction Interministérielle du Numérique
 //
 //========================================================================
 
@@ -817,7 +818,7 @@ NSSSignatureVerification::NSSSignatureVerification(std::vector<unsigned char> &&
     }
 }
 
-NSSSignatureCreation::NSSSignatureCreation(const std::string &certNickname, HashAlgorithm digestAlgTag) : hashContext(HashContext::create(digestAlgTag))
+NSSSignatureCreation::NSSSignatureCreation(const std::string &certNickname, HashAlgorithm digestAlgTag, CryptoSign::SMimeSignatureType requestedType) : hashContext(HashContext::create(digestAlgTag)), m_requestedType(requestedType)
 {
     NSSSignatureConfiguration::setNSSDir({});
     signing_cert = CERT_FindCertByNickname(CERT_GetDefaultCertDB(), certNickname.c_str());
@@ -875,6 +876,40 @@ void NSSSignatureVerification::addData(unsigned char *data_block, int data_len)
 void NSSSignatureCreation::addData(unsigned char *data_block, int data_len)
 {
     hashContext->updateHash(data_block, data_len);
+}
+
+CryptoSign::SignatureType NSSSignatureCreation::signatureType() const
+{
+    switch (m_requestedType) {
+    case CryptoSign::SMimeSignatureType::none:
+    case CryptoSign::SMimeSignatureType::adbe_pkcs7_detached:
+        return CryptoSign::SignatureType::adbe_pkcs7_detached;
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_B:
+        return CryptoSign::SignatureType::ETSI_CAdES_detached;
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_T:
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_LT:
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_LTA:
+        return CryptoSign::SignatureType::unknown_signature_type;
+    }
+    return CryptoSign::SignatureType::unknown_signature_type;
+}
+
+std::optional<CryptoSign::SigningErrorMessage> NSSSignatureCreation::checkOk() const
+{
+    if (!signing_cert) {
+        return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::KeyMissing, .message = ERROR_IN_CODE_LOCATION };
+    }
+    switch (m_requestedType) {
+    case CryptoSign::SMimeSignatureType::none:
+    case CryptoSign::SMimeSignatureType::adbe_pkcs7_detached:
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_B:
+        break;
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_T:
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_LT:
+    case CryptoSign::SMimeSignatureType::ETSI_CAdES_LTA:
+        return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::UnsupportedSignatureType, .message = ERROR_IN_CODE_LOCATION };
+    }
+    return std::nullopt;
 }
 
 unsigned int NSSSignatureCreation::estimateSize() const
@@ -1153,6 +1188,9 @@ std::variant<std::vector<unsigned char>, CryptoSign::SigningErrorMessage> NSSSig
     if (!hashContext) {
         return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::InternalError, .message = ERROR_IN_CODE_LOCATION };
     }
+    if (!signing_cert) {
+        return CryptoSign::SigningErrorMessage { .type = CryptoSign::SigningError::KeyMissing, .message = ERROR_IN_CODE_LOCATION };
+    }
     std::vector<unsigned char> digest_buffer = hashContext->endHash();
     SECItem digest;
     digest.data = digest_buffer.data();
@@ -1398,9 +1436,9 @@ std::unique_ptr<CryptoSign::VerificationInterface> NSSCryptoSignBackend::createV
     return {};
 }
 
-std::unique_ptr<CryptoSign::SigningInterface> NSSCryptoSignBackend::createSigningHandler(const std::string &certID, HashAlgorithm digestAlgTag)
+std::unique_ptr<CryptoSign::SigningInterface> NSSCryptoSignBackend::createSigningHandler(const std::string &certID, HashAlgorithm digestAlgTag, CryptoSign::SMimeSignatureType requestedType)
 {
-    return std::make_unique<NSSSignatureCreation>(certID, digestAlgTag);
+    return std::make_unique<NSSSignatureCreation>(certID, digestAlgTag, requestedType);
 }
 
 std::vector<std::unique_ptr<X509CertificateInfo>> NSSCryptoSignBackend::getAvailableSigningCertificates()
@@ -1431,6 +1469,7 @@ std::vector<std::unique_ptr<X509CertificateInfo>> NSSCryptoSignBackend::getAvail
                         CERTCertificate *cert = PK11_GetCertFromPrivateKey(curPri->key);
                         if (cert) {
                             certsList.push_back(getCertificateInfoFromCERT(cert));
+                            certsList.back()->setSupportedSMimeSignatureTypes({ CryptoSign::SMimeSignatureType::adbe_pkcs7_detached, CryptoSign::SMimeSignatureType::ETSI_CAdES_B });
                             CERT_DestroyCertificate(cert);
                         }
                     }

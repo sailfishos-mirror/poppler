@@ -2294,15 +2294,16 @@ void GfxICCBasedColorSpace::getDefaultRanges(double *decodeLow, double *decodeRa
 {
     alt->getDefaultRanges(decodeLow, decodeRange, maxImgPixel);
 
-#if 0
-  // this is nominally correct, but some PDF files don't set the
-  // correct ranges in the ICCBased dict
-  int i;
+#define SET_DECODE_LOW_AND_RANGE_FROM_MIN_AND_MAX 0
+#if SET_DECODE_LOW_AND_RANGE_FROM_MIN_AND_MAX
+    // this is nominally correct, but some PDF files don't set the
+    // correct ranges in the ICCBased dict
+    int i;
 
-  for (i = 0; i < nComps; ++i) {
-    decodeLow[i] = rangeMin[i];
-    decodeRange[i] = rangeMax[i] - rangeMin[i];
-  }
+    for (i = 0; i < nComps; ++i) {
+        decodeLow[i] = rangeMin[i];
+        decodeRange[i] = rangeMax[i] - rangeMin[i];
+    }
 #endif
 }
 

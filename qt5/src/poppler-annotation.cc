@@ -1800,22 +1800,24 @@ void Annotation::setPopup(const Annotation::Popup &popup)
         return;
     }
 
-#if 0 /* TODO: Remove old popup and add AnnotPopup to page */
-    AnnotMarkup *markupann = dynamic_cast<AnnotMarkup*>(d->pdfAnnot);
+#define ENABLE_QT_SET_POPUP_FOR_PDF_ANNOT 0
+#if ENABLE_QT_SET_POPUP_FOR_PDF_ANNOT
+    AnnotMarkup *markupann = dynamic_cast<AnnotMarkup *>(d->pdfAnnot);
     if (!markupann)
         return;
 
     // Create a new AnnotPopup and assign it to pdfAnnot
-    PDFRectangle rect = d->toPdfRectangle( popup.geometry() );
-    AnnotPopup * p = new AnnotPopup( d->pdfPage->getDoc(), rect );
-    p->setOpen( !(popup.flags() & Annotation::Hidden) );
-    if (!popup.summary().isEmpty())
-    {
+    PDFRectangle rect = d->toPdfRectangle(popup.geometry());
+    AnnotPopup *p = new AnnotPopup(d->pdfPage->getDoc(), rect);
+    p->setOpen(!(popup.flags() & Annotation::Hidden));
+    if (!popup.summary().isEmpty()) {
         GooString *s = QStringToUnicodeGooString(popup.summary());
         markupann->setLabel(s);
         delete s;
     }
     markupann->setPopup(p);
+#else
+    qWarning() << "Annotation::setPopup implementation when the pdf annotation exists not yet complete";
 #endif
 }
 

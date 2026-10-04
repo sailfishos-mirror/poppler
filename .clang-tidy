@@ -28,7 +28,6 @@ Checks:  >
     -readability-isolate-declaration,
     -readability-math-missing-parentheses,
     -readability-function-cognitive-complexity,
-    -readability-avoid-unconditional-preprocessor-if,
     -readability-suspicious-call-argument,
     -readability-trailing-comma,
     -readability-redundant-nested-if,

@@ -4178,7 +4178,6 @@ SplashBitmap *SplashOutputDev::takeBitmap()
     return ret;
 }
 
-#if 1 //~tmp: turn off anti-aliasing temporarily
 bool SplashOutputDev::getVectorAntialias()
 {
     return splash->getVectorAntialias();
@@ -4190,7 +4189,6 @@ void SplashOutputDev::setVectorAntialias(bool vaa)
     vectorAntialias = vaa;
     splash->setVectorAntialias(vaa);
 }
-#endif
 
 void SplashOutputDev::setFreeTypeHinting(bool enable, bool enableSlightHintingA)
 {

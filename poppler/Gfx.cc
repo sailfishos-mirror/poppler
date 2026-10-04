@@ -2350,12 +2350,10 @@ void Gfx::doShadingPatternFill(GfxShadingPattern *sPat, bool stroke, bool eoFill
         state->clearPath();
     }
 
-#if 1 //~tmp: turn off anti-aliasing temporarily
     bool vaa = out->getVectorAntialias();
     if (vaa) {
         out->setVectorAntialias(false);
     }
-#endif
 
     // do shading type-specific operations
     switch (shading->getType()) {
@@ -2378,11 +2376,9 @@ void Gfx::doShadingPatternFill(GfxShadingPattern *sPat, bool stroke, bool eoFill
         break;
     }
 
-#if 1 //~tmp: turn off anti-aliasing temporarily
     if (vaa) {
         out->setVectorAntialias(true);
     }
-#endif
 
     // restore graphics state
     restoreStateStack(savedState);
@@ -2422,12 +2418,10 @@ void Gfx::opShFill(Object args[], int /*numArgs*/)
     state->setFillColorSpace(shading->getColorSpace()->copy());
     out->updateFillColorSpace(state);
 
-#if 1 //~tmp: turn off anti-aliasing temporarily
     bool vaa = out->getVectorAntialias();
     if (vaa) {
         out->setVectorAntialias(false);
     }
-#endif
 
     // do shading type-specific operations
     switch (shading->getType()) {
@@ -2450,11 +2444,9 @@ void Gfx::opShFill(Object args[], int /*numArgs*/)
         break;
     }
 
-#if 1 //~tmp: turn off anti-aliasing temporarily
     if (vaa) {
         out->setVectorAntialias(true);
     }
-#endif
 
     // restore graphics state
     restoreStateStack(savedState);

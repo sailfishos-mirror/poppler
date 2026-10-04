@@ -1078,7 +1078,7 @@ void NSSSignatureVerification::validateCertificateAsync(std::chrono::system_cloc
     CERTCertificate *cert;
 
     if (!CMSSignerInfo) {
-        validationStatus = std::async([doneCallback]() {
+        validationStatus = std::async([doneCallback] {
             if (doneCallback) {
                 doneCallback();
             }
@@ -1143,7 +1143,7 @@ void NSSSignatureVerification::validateCertificateAsync(std::chrono::system_cloc
     // be put in the thread, but I'm not sure about all of the
     // thread safety of nss.
 
-    validationStatus = std::async([result, doneCallback]() {
+    validationStatus = std::async([result, doneCallback] {
         if (doneCallback) {
             doneCallback();
         }

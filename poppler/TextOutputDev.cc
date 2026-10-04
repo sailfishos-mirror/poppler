@@ -5416,7 +5416,7 @@ void TextPage::dump(void *outputStream, TextOutputFunc outputFunc, bool physLayo
         for (TextFlow *flow = flows; flow; flow = flow->next) {
             for (TextBlock *blk = flow->blocks; blk; blk = blk->next) {
                 for (TextLine *line = blk->lines; line; line = line->next) {
-                    const bool suppressHyphen = [&]() -> bool {
+                    const bool suppressHyphen = [&] -> bool {
                         if (!line->next && !blk->next) {
                             return false;
                         }

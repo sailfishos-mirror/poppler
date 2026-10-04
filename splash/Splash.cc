@@ -61,7 +61,7 @@
 //------------------------------------------------------------------------
 
 // C++26: make constexpr, needs constexpr std::pow
-static const std::array<double, splashAASize * splashAASize + 1> aaGamma = []() {
+static const std::array<double, splashAASize * splashAASize + 1> aaGamma = [] {
     constexpr double splashAAGamma = 1.5;
     std::array<double, splashAASize * splashAASize + 1> tGamma { 0.0 };
     for (size_t i = 0; i < tGamma.size(); ++i) {

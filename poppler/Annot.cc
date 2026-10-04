@@ -4799,7 +4799,7 @@ bool AnnotAppearanceBuilder::drawText(const std::string &inputText, const Form *
         appearBuf.append("/Tx BMC\n");
     }
     appearBuf.append("q\n");
-    auto calculateDxDy = [this, appearCharacs, &rect]() -> std::tuple<double, double> {
+    auto calculateDxDy = [this, appearCharacs, &rect] -> std::tuple<double, double> {
         const int rot = appearCharacs ? appearCharacs->getRotation() : 0;
         switch (rot) {
         case 90:

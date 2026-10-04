@@ -2147,10 +2147,11 @@ void PSOutputDev::setupEmbeddedType1Font(const Ref *id, const std::string &psNam
                 writePSChar(hexChar[start[i] & 0x0f]);
             }
         }
-#if 0 // this causes trouble for various PostScript printers
-    // if Length2 is incorrect (too small), font data gets chopped, so
-    // we take a few extra characters from the trailer just in case
-    length2 += length3 >= 8 ? 8 : length3;
+#define ADD_PADDING_TO_TYPE1_FONT_ENCRYPTED_PORTION 0
+#if ADD_PADDING_TO_TYPE1_FONT_ENCRYPTED_PORTION // this causes trouble for various PostScript printers
+        // if Length2 is incorrect (too small), font data gets chopped, so
+        // we take a few extra characters from the trailer just in case
+        length2 += length3 >= 8 ? 8 : length3;
 #endif
         while (i < length2) {
             if ((c = stream->getChar()) == EOF) {

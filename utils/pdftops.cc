@@ -360,7 +360,7 @@ int main(int argc, char *argv[])
     if (userPassword[0] != '\001') {
         userPW = GooString(userPassword);
     }
-    if (fileName->compare("-") == 0) {
+    if (fileName->toStr() == "-") {
         delete fileName;
         fileName = new GooString("fd://0");
     }
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
     // construct PostScript file name
     if (argc == 3) {
         psFileName = std::string(argv[2]);
-    } else if (fileName->compare("fd://0") == 0) {
+    } else if (fileName->toStr() == "fd://0") {
         error(errCommandLine, -1, "You have to provide an output filename when reading from stdin.");
         goto err1;
     } else {

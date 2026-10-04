@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     if (userPassword[0] != '\001') {
         userPW = GooString(userPassword);
     }
-    if (fileName->compare("-") == 0) {
+    if (fileName->toStr() == "-") {
         delete fileName;
         fileName = new GooString("fd://0");
     }

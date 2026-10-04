@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
 
     fileName = new GooString(argv[1]);
 
-    if (fileName->compare("-") == 0) {
+    if (fileName->toStr() == "-") {
         delete fileName;
         fileName = new GooString("fd://0");
     }
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
         if (!htmlFileName) {
             htmlFileName = std::move(tmp);
         }
-    } else if (fileName->compare("fd://0") == 0) {
+    } else if (fileName->toStr() == "fd://0") {
         error(errCommandLine, -1, "You have to provide an output filename when reading from stdin.");
         goto error;
     } else {

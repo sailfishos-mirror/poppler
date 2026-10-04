@@ -5340,7 +5340,7 @@ bool AnnotAppearanceBuilder::drawFormFieldButton(const FormFieldButton &field, c
         }
         break;
     case formButtonCheck:
-        if (appearState && appearState->compare("Off") != 0) {
+        if (appearState && appearState != "Off") {
             if (!caption) {
                 std::string checkMark("3");
                 return drawText(checkMark, form, da, resources, border, appearCharacs, rect, VariableTextQuadding::centered, xref, resourcesDict, ForceZapfDingbatsDrawTextFlag);
@@ -7244,13 +7244,13 @@ void AnnotFileAttachment::draw(Gfx *gfx, bool printing)
         } else {
             appearBuilder.append("1 1 1 rg\n");
         }
-        if (!iconName->compare("PushPin")) {
+        if (iconName->toStr() == "PushPin") {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_PUSHPIN);
-        } else if (!iconName->compare("Paperclip")) {
+        } else if (iconName->toStr() == "Paperclip") {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_PAPERCLIP);
-        } else if (!iconName->compare("Graph")) {
+        } else if (iconName->toStr() == "Graph") {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_GRAPH);
-        } else if (!iconName->compare("Tag")) {
+        } else if (iconName->toStr() == "Tag") {
             appearBuilder.append(ANNOT_FILE_ATTACHMENT_AP_TAG);
         }
         appearBuilder.append("Q\n");
@@ -7395,9 +7395,9 @@ void AnnotSound::draw(Gfx *gfx, bool printing)
         } else {
             appearBuilder.append("1 1 1 rg\n");
         }
-        if (!iconName->compare("Speaker")) {
+        if (iconName->toStr() == "Speaker") {
             appearBuilder.append(ANNOT_SOUND_AP_SPEAKER);
-        } else if (!iconName->compare("Mic")) {
+        } else if (iconName->toStr() == "Mic") {
             appearBuilder.append(ANNOT_SOUND_AP_MIC);
         }
         appearBuilder.append("Q\n");

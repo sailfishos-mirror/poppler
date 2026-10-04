@@ -263,7 +263,7 @@ static bool parseAntialiasOption()
 {
     const AntialiasOption *option = antialiasOptions;
     while (option->name) {
-        if (antialias.compare(option->name) == 0) {
+        if (antialias.toStr() == option->name) {
             antialiasEnum = option->value;
             return true;
         }
@@ -305,7 +305,7 @@ static bool parseJpegOptions()
         opt.erase(iequal, opt.size() - iequal);
         // here opt is "<optN>" and value is "<valN>"
 
-        if (opt.compare("quality") == 0) {
+        if (opt.toStr() == "quality") {
             if (!isInt(value.c_str())) {
                 fprintf(stderr, "Invalid jpeg quality\n");
                 return false;
@@ -315,19 +315,19 @@ static bool parseJpegOptions()
                 fprintf(stderr, "jpeg quality must be between 0 and 100\n");
                 return false;
             }
-        } else if (opt.compare("progressive") == 0) {
+        } else if (opt.toStr() == "progressive") {
             jpegProgressive = false;
-            if (value.compare("y") == 0) {
+            if (value.toStr() == "y") {
                 jpegProgressive = true;
-            } else if (value.compare("n") != 0) {
+            } else if (value.toStr() != "n") {
                 fprintf(stderr, "jpeg progressive option must be \"y\" or \"n\"\n");
                 return false;
             }
-        } else if (opt.compare("optimize") == 0 || opt.compare("optimise") == 0) {
+        } else if (opt.toStr() == "optimize" || opt.toStr() == "optimise") {
             jpegOptimize = false;
-            if (value.compare("y") == 0) {
+            if (value.toStr() == "y") {
                 jpegOptimize = true;
-            } else if (value.compare("n") != 0) {
+            } else if (value.toStr() != "n") {
                 fprintf(stderr, "jpeg optimize option must be \"y\" or \"n\"\n");
                 return false;
             }
@@ -403,7 +403,7 @@ static void writePageImage(GooString *filename)
         return;
     }
 
-    if (filename->compare("fd://0") == 0) {
+    if (filename->toStr() == "fd://0") {
 #if defined(_WIN32) || defined(__CYGWIN__)
         _setmode(fileno(stdout), O_BINARY);
 #endif
@@ -583,7 +583,7 @@ static void beginDocument(GooString *inputFileName, GooString *outputFileName, d
         if (printToWin32) {
             output_file = nullptr;
         } else {
-            if (outputFileName->compare("fd://0") == 0) {
+            if (outputFileName->toStr() == "fd://0") {
 #if defined(_WIN32) || defined(__CYGWIN__)
                 _setmode(fileno(stdout), O_BINARY);
 #endif
@@ -819,7 +819,7 @@ static std::unique_ptr<GooString> getImageFileName(const GooString *outputFileNa
         snprintf(buf, sizeof(buf), "-%0*d", numDigits, page);
         imageName->append(buf);
     }
-    if (outputFileName->compare("fd://0") != 0) {
+    if (outputFileName->toStr() != "fd://0") {
         if (png) {
             imageName->append(".png");
         } else if (jpeg) {
@@ -839,7 +839,7 @@ static std::unique_ptr<GooString> getOutputFileName(GooString *fileName, GooStri
     std::unique_ptr<GooString> name;
 
     if (outputName) {
-        if (outputName->compare("-") == 0) {
+        if (outputName->toStr() == "-") {
             if (printToWin32 || (!printing && !singleFile)) {
                 fprintf(stderr, "Error: stdout may only be used with the ps, eps, pdf, svg output options or if -singlefile is used.\n");
                 exit(99);
@@ -853,7 +853,7 @@ static std::unique_ptr<GooString> getOutputFileName(GooString *fileName, GooStri
         return nullptr; // No output file means print to printer
     }
 
-    if (fileName->compare("fd://0") == 0) {
+    if (fileName->toStr() == "fd://0") {
         fprintf(stderr, "Error: an output filename or '-' must be supplied when the PDF file is stdin.\n");
         exit(99);
     }
@@ -1083,7 +1083,7 @@ int main(int argc, char *argv[])
     }
 
     fileName = new GooString(argv[1]);
-    if (fileName->compare("-") == 0) {
+    if (fileName->toStr() == "-") {
         delete fileName;
         fileName = new GooString("fd://0");
     }

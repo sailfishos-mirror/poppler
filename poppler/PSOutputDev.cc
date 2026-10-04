@@ -4013,30 +4013,30 @@ void PSOutputDev::addCustomColor(const GfxSeparationColorSpace &sepCS)
     GfxColor color;
     GfxCMYK cmyk;
 
-    if (!sepCS.getName()->compare("Black")) {
+    if (sepCS.getName()->toStr() == "Black") {
         processColors |= psProcessBlack;
         return;
     }
-    if (!sepCS.getName()->compare("Cyan")) {
+    if (sepCS.getName()->toStr() == "Cyan") {
         processColors |= psProcessCyan;
         return;
     }
-    if (!sepCS.getName()->compare("Yellow")) {
+    if (sepCS.getName()->toStr() == "Yellow") {
         processColors |= psProcessYellow;
         return;
     }
-    if (!sepCS.getName()->compare("Magenta")) {
+    if (sepCS.getName()->toStr() == "Magenta") {
         processColors |= psProcessMagenta;
         return;
     }
-    if (!sepCS.getName()->compare("All")) {
+    if (sepCS.getName()->toStr() == "All") {
         return;
     }
-    if (!sepCS.getName()->compare("None")) {
+    if (sepCS.getName()->toStr() == "None") {
         return;
     }
     for (cc = customColors; cc; cc = cc->next) {
-        if (!cc->name->compare(sepCS.getName()->toStr())) {
+        if (cc->name->toStr() == sepCS.getName()->toStr()) {
             return;
         }
     }

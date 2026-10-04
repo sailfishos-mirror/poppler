@@ -2583,16 +2583,16 @@ void GfxIndexedColorSpace::getDefaultRanges(double *decodeLow, double *decodeRan
 GfxSeparationColorSpace::GfxSeparationColorSpace(std::unique_ptr<GooString> &&nameA, std::unique_ptr<GfxColorSpace> &&altA, std::unique_ptr<Function> funcA) : name(std::move(nameA)), alt(std::move(altA))
 {
     func = std::move(funcA);
-    nonMarking = !name->compare("None");
-    if (!name->compare("Cyan")) {
+    nonMarking = name->toStr() == "None";
+    if (name->toStr() == "Cyan") {
         overprintMask = 0x01;
-    } else if (!name->compare("Magenta")) {
+    } else if (name->toStr() == "Magenta") {
         overprintMask = 0x02;
-    } else if (!name->compare("Yellow")) {
+    } else if (name->toStr() == "Yellow") {
         overprintMask = 0x04;
-    } else if (!name->compare("Black")) {
+    } else if (name->toStr() == "Black") {
         overprintMask = 0x08;
-    } else if (!name->compare("All")) {
+    } else if (name->toStr() == "All") {
         overprintMask = 0xffffffff;
     }
 }
@@ -2662,7 +2662,7 @@ void GfxSeparationColorSpace::getGray(const GfxColor &color, GfxGray *gray) cons
     GfxColor color2;
     int i;
 
-    if (alt->getMode() == csDeviceGray && name->compare("Black") == 0) {
+    if (alt->getMode() == csDeviceGray && name->toStr() == "Black") {
         *gray = clip01(gfxColorComp1 - color.c[0]);
     } else {
         x = colToDbl(color.c[0]);
@@ -2681,7 +2681,7 @@ void GfxSeparationColorSpace::getRGB(const GfxColor &color, GfxRGB *rgb) const
     GfxColor color2;
     int i;
 
-    if (alt->getMode() == csDeviceGray && name->compare("Black") == 0) {
+    if (alt->getMode() == csDeviceGray && name->toStr() == "Black") {
         rgb->r = clip01(gfxColorComp1 - color.c[0]);
         rgb->g = clip01(gfxColorComp1 - color.c[0]);
         rgb->b = clip01(gfxColorComp1 - color.c[0]);
@@ -2703,22 +2703,22 @@ void GfxSeparationColorSpace::getCMYK(const GfxColor &color, GfxCMYK *cmyk) cons
     GfxColor color2;
     int i;
 
-    if (name->compare("Black") == 0) {
+    if (name->toStr() == "Black") {
         cmyk->c = 0;
         cmyk->m = 0;
         cmyk->y = 0;
         cmyk->k = color.c[0];
-    } else if (name->compare("Cyan") == 0) {
+    } else if (name->toStr() == "Cyan") {
         cmyk->c = color.c[0];
         cmyk->m = 0;
         cmyk->y = 0;
         cmyk->k = 0;
-    } else if (name->compare("Magenta") == 0) {
+    } else if (name->toStr() == "Magenta") {
         cmyk->c = 0;
         cmyk->m = color.c[0];
         cmyk->y = 0;
         cmyk->k = 0;
-    } else if (name->compare("Yellow") == 0) {
+    } else if (name->toStr() == "Yellow") {
         cmyk->c = 0;
         cmyk->m = 0;
         cmyk->y = color.c[0];
@@ -2777,7 +2777,7 @@ void GfxSeparationColorSpace::createMapping(std::vector<std::unique_ptr<GfxSepar
         unsigned int newOverprintMask = 0x10;
         for (std::size_t i = 0; i < separationList->size(); i++) {
             const std::unique_ptr<GfxSeparationColorSpace> &sepCS = (*separationList)[i];
-            if (!sepCS->getName()->compare(name->toStr())) {
+            if (sepCS->getName()->toStr() == name->toStr()) {
                 if (sepCS->getFunc()->hasDifferentResultSet(func.get())) {
                     error(errSyntaxWarning, -1, "Different functions found for '{0:t}', convert immediately", name.get());
                     mapping.clear();
@@ -3038,7 +3038,7 @@ void GfxDeviceNColorSpace::createMapping(std::vector<std::unique_ptr<GfxSeparati
                 sepFunc = func.get();
             } else {
                 for (const std::unique_ptr<GfxSeparationColorSpace> &sepCS : sepsCS) {
-                    if (!sepCS->getName()->compare(name)) {
+                    if (sepCS->getName()->toStr() == name) {
                         sepFunc = sepCS->getFunc();
                         break;
                     }
@@ -3046,7 +3046,7 @@ void GfxDeviceNColorSpace::createMapping(std::vector<std::unique_ptr<GfxSeparati
             }
             for (std::size_t j = 0; j < separationList->size(); j++) {
                 const std::unique_ptr<GfxSeparationColorSpace> &sepCS = (*separationList)[j];
-                if (!sepCS->getName()->compare(name)) {
+                if (sepCS->getName()->toStr() == name) {
                     if (sepFunc != nullptr && sepCS->getFunc()->hasDifferentResultSet(sepFunc)) {
                         error(errSyntaxWarning, -1, "Different functions found for '{0:r}', convert immediately", &name);
                         mapping.clear();
@@ -3073,7 +3073,7 @@ void GfxDeviceNColorSpace::createMapping(std::vector<std::unique_ptr<GfxSeparati
                     separationList->push_back(std::make_unique<GfxSeparationColorSpace>(std::make_unique<GooString>(name), alt->copy(), func->copy()));
                 } else {
                     for (const std::unique_ptr<GfxSeparationColorSpace> &sepCS : sepsCS) {
-                        if (!sepCS->getName()->compare(name)) {
+                        if (sepCS->getName()->toStr() == name) {
                             found = true;
                             separationList->push_back(sepCS->copyAsOwnType());
                             break;

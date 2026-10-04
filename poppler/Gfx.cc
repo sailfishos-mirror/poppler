@@ -762,10 +762,6 @@ void Gfx::execOp(Object *cmd, Object args[], int numArgs)
             return;
         }
         if (numArgs > op->numArgs) {
-#if 0
-      error(errSyntaxWarning, getPos(),
-	    "Too many ({0:d}) args to '{1:s}' operator", numArgs, name);
-#endif
             argPtr += numArgs - op->numArgs;
             numArgs = op->numArgs;
         }

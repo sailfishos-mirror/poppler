@@ -122,18 +122,6 @@ extern double wordBreakThreshold;
 
 static bool debug = false;
 
-#if 0
-static GooString* Dirname(GooString* str){
-
-  char *p=str->c_str();
-  int len=str->getLength();
-  for (int i=len-1;i>=0;i--)
-    if (*(p+i)==SLASH)
-      return new GooString(p,i+1);
-  return new GooString();
-}
-#endif
-
 static std::string print_matrix(const std::array<double, 4> &mat)
 {
     return GooString::format("[{0:g} {1:g} {2:g} {3:g}]", mat[0], mat[1], mat[2], mat[3]);
@@ -413,14 +401,6 @@ void HtmlPage::endString()
     }
 
     curStr->endString();
-
-#if 0 //~tmp
-  if (curStr->yMax - curStr->yMin > 20) {
-    delete curStr;
-    curStr = NULL;
-    return;
-  }
-#endif
 
     // insert string in y-major list
     h = curStr->yMax - curStr->yMin;
@@ -1178,25 +1158,6 @@ HtmlOutputDev::~HtmlOutputDev()
 
 void HtmlOutputDev::startPage(int pageNumA, GfxState *state, XRef * /*xref*/)
 {
-#if 0
-  if (mode&&!xml){
-    if (write){
-      write=false;
-      GooString* fname=Dirname(Docname);
-      fname->append("image.log");
-      if((tin=fopen(getFileNameFromPath(fname->c_str(),fname->getLength()),"w"))==NULL){
-	printf("Error : can not open %s",fname);
-	exit(1);
-      }
-      delete fname;
-    // if(state->getRotation()!=0)
-    //  fprintf(tin,"ROTATE=%d rotate %d neg %d neg translate\n",state->getRotation(),state->getX1(),-state->getY1());
-    // else
-      fprintf(tin,"ROTATE=%d neg %d neg translate\n",state->getX1(),state->getY1());
-    }
-  }
-#endif
-
     pageNum = pageNumA;
     const std::string str = gbasename(Docname->c_str());
     pages->clear();

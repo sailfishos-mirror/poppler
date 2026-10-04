@@ -56,6 +56,8 @@
 //
 //========================================================================
 
+#define ENABLE_HTMLOUTPUTDEV_DEBUGGING 0
+
 #include "config.h"
 #include <cstdio>
 #include <cstdlib>
@@ -474,17 +476,15 @@ void HtmlPage::coalesce()
     int n, i;
     double curX, curY;
 
-#if 0 //~ for debugging
-  for (str1 = yxStrings; str1; str1 = str1->yxNext) {
-    printf("x=%f..%f  y=%f..%f  size=%2d '",
-	   str1->xMin, str1->xMax, str1->yMin, str1->yMax,
-	   (int)(str1->yMax - str1->yMin));
-    for (i = 0; i < str1->len; ++i) {
-      fputc(str1->text[i] & 0xff, stdout);
+#if ENABLE_HTMLOUTPUTDEV_DEBUGGING
+    for (str1 = yxStrings; str1; str1 = str1->yxNext) {
+        printf("x=%f..%f  y=%f..%f  size=%2d '", str1->xMin, str1->xMax, str1->yMin, str1->yMax, (int)(str1->yMax - str1->yMin));
+        for (i = 0; i < str1->len; ++i) {
+            fputc(str1->text[i] & 0xff, stdout);
+        }
+        printf("'\n");
     }
-    printf("'\n");
-  }
-  printf("\n------------------------------------------------------------\n\n");
+    printf("\n------------------------------------------------------------\n\n");
 #endif
     str1 = yxStrings;
 
@@ -673,14 +673,12 @@ void HtmlPage::coalesce()
     bool finish_a = str1->getLink() != nullptr;
     CloseTags(str1->htext.get(), finish_a, finish_italic, finish_bold);
 
-#if 0 //~ for debugging
-  for (str1 = yxStrings; str1; str1 = str1->yxNext) {
-    printf("x=%3d..%3d  y=%3d..%3d  size=%2d ",
-	   (int)str1->xMin, (int)str1->xMax, (int)str1->yMin, (int)str1->yMax,
-	   (int)(str1->yMax - str1->yMin));
-    printf("'%s'\n", str1->htext->c_str());
-  }
-  printf("\n------------------------------------------------------------\n\n");
+#if ENABLE_HTMLOUTPUTDEV_DEBUGGING
+    for (str1 = yxStrings; str1; str1 = str1->yxNext) {
+        printf("x=%3d..%3d  y=%3d..%3d  size=%2d ", (int)str1->xMin, (int)str1->xMax, (int)str1->yMin, (int)str1->yMax, (int)(str1->yMax - str1->yMin));
+        printf("'%s'\n", str1->htext->c_str());
+    }
+    printf("\n------------------------------------------------------------\n\n");
 #endif
 }
 

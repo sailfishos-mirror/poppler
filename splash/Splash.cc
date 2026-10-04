@@ -104,12 +104,16 @@ inline void Guswap(T &a, T &b)
 // rectangle, so we instead use the fill scan conversion rule.
 // However, the correct rule works better for glyphs, so we also
 // provide that option in fillImageMask.
-#if 0
-static inline int imgCoordMungeLower(double x) {
-  return splashCeil(x + 0.5) - 1;
+#define SPLASH_USE_PDF_SPEC_COORD_MUNGE 0
+
+#if SPLASH_USE_PDF_SPEC_COORD_MUNGE
+static inline int imgCoordMungeLower(double x)
+{
+    return splashCeil(x + 0.5) - 1;
 }
-static inline int imgCoordMungeUpper(double x) {
-  return splashCeil(x + 0.5) - 1;
+static inline int imgCoordMungeUpper(double x)
+{
+    return splashCeil(x + 0.5) - 1;
 }
 #else
 static inline int imgCoordMungeLower(double x)

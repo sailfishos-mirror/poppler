@@ -18,7 +18,7 @@
 // Copyright (C) 2009 Michael K. Johnson <a1237@danlj.org>
 // Copyright (C) 2009 Shen Liang <shenzhuxi@gmail.com>
 // Copyright (C) 2009 Stefan Thomas <thomas@eload24.com>
-// Copyright (C) 2009, 2010, 2017-2020, 2022, 2025 Albert Astals Cid <aacid@kde.org>
+// Copyright (C) 2009, 2010, 2017-2020, 2022, 2025, 2026 Albert Astals Cid <aacid@kde.org>
 // Copyright (C) 2010, 2011-2017, 2023, 2024 Adrian Johnson <ajohnson@redneon.com>
 // Copyright (C) 2010, 2014 Hib Eris <hib@hiberis.nl>
 // Copyright (C) 2010 Jonathan Liu <net147@gmail.com>
@@ -946,9 +946,9 @@ int main(int argc, char *argv[])
         }
         if (printVersion || printHelp) {
             exit(0);
-        } else {
-            exit(99);
         }
+
+        exit(99);
     }
 
     num_outputs = (png ? 1 : 0) + (jpeg ? 1 : 0) + (tiff ? 1 : 0) + (ps ? 1 : 0) + (eps ? 1 : 0) + (pdf ? 1 : 0) + (printToWin32 ? 1 : 0) + (printdlg ? 1 : 0) + (svg ? 1 : 0);

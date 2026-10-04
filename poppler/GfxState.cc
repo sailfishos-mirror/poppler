@@ -3398,30 +3398,30 @@ std::unique_ptr<GfxShading> GfxShading::parse(GfxResources *res, Object *obj, Ou
     case 4:
         if (obj->isStream()) {
             return GfxGouraudTriangleShading::parse(res, 4, dict, obj->getStream(), out, state);
-        } else {
-            error(errSyntaxWarning, -1, "Invalid Type 4 shading object");
         }
+
+        error(errSyntaxWarning, -1, "Invalid Type 4 shading object");
         break;
     case 5:
         if (obj->isStream()) {
             return GfxGouraudTriangleShading::parse(res, 5, dict, obj->getStream(), out, state);
-        } else {
-            error(errSyntaxWarning, -1, "Invalid Type 5 shading object");
         }
+
+        error(errSyntaxWarning, -1, "Invalid Type 5 shading object");
         break;
     case 6:
         if (obj->isStream()) {
             return GfxPatchMeshShading::parse(res, 6, dict, obj->getStream(), out, state);
-        } else {
-            error(errSyntaxWarning, -1, "Invalid Type 6 shading object");
         }
+
+        error(errSyntaxWarning, -1, "Invalid Type 6 shading object");
         break;
     case 7:
         if (obj->isStream()) {
             return GfxPatchMeshShading::parse(res, 7, dict, obj->getStream(), out, state);
-        } else {
-            error(errSyntaxWarning, -1, "Invalid Type 7 shading object");
         }
+
+        error(errSyntaxWarning, -1, "Invalid Type 7 shading object");
         break;
     default:
         error(errSyntaxWarning, -1, "Unimplemented shading type {0:d}", typeA);

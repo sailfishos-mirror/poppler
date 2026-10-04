@@ -990,19 +990,19 @@ void Gfx::opSetExtGState(Object args[], int /*numArgs*/)
             opSetDash(args2, 2);
         }
     }
-#if 0 //~ need to add a new version of GfxResources::lookupFont() that
-      //~ takes an indirect ref instead of a name
-  if (dict->lookup("Font", &obj2)->isArray() &&
-      obj2.arrayGetLength() == 2) {
-    obj2.arrayGet(0, &args2[0]);
-    obj2.arrayGet(1, &args2[1]);
-    if (args2[0].isDict() && args2[1].isNum()) {
-      opSetFont(args2, 2);
+#define SET_FONT_FROM_EXTGSTATE 0
+#if SET_FONT_FROM_EXTGSTATE //~ need to add a new version of GfxResources::lookupFont() that
+    //~ takes an indirect ref instead of a name
+    if (dict->lookup("Font", &obj2)->isArray() && obj2.arrayGetLength() == 2) {
+        obj2.arrayGet(0, &args2[0]);
+        obj2.arrayGet(1, &args2[1]);
+        if (args2[0].isDict() && args2[1].isNum()) {
+            opSetFont(args2, 2);
+        }
+        args2[0].free();
+        args2[1].free();
     }
-    args2[0].free();
-    args2[1].free();
-  }
-  obj2.free();
+    obj2.free();
 #endif
     obj2 = dict->lookup("FL");
     if (obj2.isNum()) {

@@ -91,8 +91,8 @@ double wordBreakThreshold = 10; // 10%, below converted into a coefficient - 0.1
 bool showHidden = false;
 bool noMerge = false;
 bool fontFullName = false;
-static char ownerPassword[33] = "";
-static char userPassword[33] = "";
+static char ownerPassword[128] = "";
+static char userPassword[128] = "";
 static bool printVersion = false;
 
 static std::unique_ptr<GooString> getInfoString(Dict *infoDict, const char *key);

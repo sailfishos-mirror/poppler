@@ -205,8 +205,8 @@ static bool dumpSignature(int sig_num, FormFieldSignature *s, const char *filena
 
 static GooString nssDir;
 static GooString nssPassword;
-static char ownerPassword[33] = "\001";
-static char userPassword[33] = "\001";
+static char ownerPassword[128] = "\001";
+static char userPassword[128] = "\001";
 static bool printVersion = false;
 static bool printHelp = false;
 static bool printCryptoSignBackends = false;

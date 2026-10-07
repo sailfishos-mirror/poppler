@@ -135,8 +135,8 @@ static bool duplex = false;
 static char tiffCompressionStr[16] = "";
 static bool docStruct = false;
 
-static char ownerPassword[33] = "";
-static char userPassword[33] = "";
+static char ownerPassword[128] = "";
+static char userPassword[128] = "";
 static bool quiet = false;
 static bool printVersion = false;
 static bool printHelp = false;

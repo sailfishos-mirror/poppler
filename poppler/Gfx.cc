@@ -63,6 +63,7 @@
 #include <config.h>
 
 #include <climits>
+#include <cstdint>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -3333,14 +3334,9 @@ void Gfx::gouraudFillTriangle(double x0, double y0, GfxColor *color0, double x1,
     int i;
 
     for (i = 0; i < nComps; ++i) {
-        int color01Delta, color12Delta;
-        if (checkedSubtraction(color0->c[i], color1->c[i], &color01Delta)) {
-            break;
-        }
-        if (checkedSubtraction(color1->c[i], color2->c[i], &color12Delta)) {
-            break;
-        }
-        if (abs(color01Delta) > gouraudColorDelta || abs(color12Delta) > gouraudColorDelta) {
+        const auto color01Delta = static_cast<int64_t>(color0->c[i]) - static_cast<int64_t>(color1->c[i]);
+        const auto color12Delta = static_cast<int64_t>(color1->c[i]) - static_cast<int64_t>(color2->c[i]);
+        if (std::abs(color01Delta) > gouraudColorDelta || std::abs(color12Delta) > gouraudColorDelta) {
             break;
         }
     }

@@ -1131,7 +1131,7 @@ T3FontCache::T3FontCache(const Ref *fontIDA, double m11A, double m12A, double m2
     validBBox = validBBoxA;
     // sanity check for excessively large glyphs (which most likely
     // indicate an incorrect BBox)
-    if (glyphW > INT_MAX / glyphH || glyphW <= 0 || glyphH <= 0 || glyphW * glyphH > 100000) {
+    if (glyphW <= 0 || glyphH <= 0 || glyphW > INT_MAX / glyphH || glyphW * glyphH > 100000) {
         glyphW = glyphH = 100;
         validBBox = false;
     }

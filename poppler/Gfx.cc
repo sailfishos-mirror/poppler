@@ -68,6 +68,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#include <algorithm>
 #include <memory>
 #include <numbers>
 #include "goo/GooTimer.h"
@@ -3297,6 +3298,12 @@ void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading)
 
     const std::unique_ptr<GfxState::ReusablePathIterator> reusablePath = state->getReusablePath();
 
+    // Skip triangles, and the pieces they are subdivided into, that lie entirely
+    // outside the clip.  A shading clipped to a small path, such as a glyph,
+    // would otherwise be subdivided over its whole area.
+    PDFRectangle clipBox;
+    state->getUserClipBBox(&clipBox.x1, &clipBox.y1, &clipBox.x2, &clipBox.y2);
+
     if (shading->isParameterized()) {
         // work with parameterized values:
         double color0, color1, color2;
@@ -3304,7 +3311,7 @@ void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading)
         const double refineColorThreshold = gouraudParameterizedColorDelta * (shading->getParameterDomainMax() - shading->getParameterDomainMin());
         for (i = 0; i < shading->getNTriangles(); ++i) {
             shading->getTriangle(i, &x0, &y0, &color0, &x1, &y1, &color1, &x2, &y2, &color2);
-            gouraudFillTriangle(x0, y0, color0, x1, y1, color1, x2, y2, color2, refineColorThreshold, 0, shading, reusablePath.get());
+            gouraudFillTriangle(x0, y0, color0, x1, y1, color1, x2, y2, color2, refineColorThreshold, 0, shading, reusablePath.get(), clipBox);
         }
 
     } else {
@@ -3317,7 +3324,7 @@ void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading)
         GfxColor color0, color1, color2;
         for (i = 0; i < shading->getNTriangles(); ++i) {
             shading->getTriangle(i, &x0, &y0, &color0, &x1, &y1, &color1, &x2, &y2, &color2);
-            gouraudFillTriangle(x0, y0, &color0, x1, y1, &color1, x2, y2, &color2, shading->getColorSpace()->getNComps(), 0, reusablePath.get());
+            gouraudFillTriangle(x0, y0, &color0, x1, y1, &color1, x2, y2, &color2, shading->getColorSpace()->getNComps(), 0, reusablePath.get(), clipBox);
         }
     }
 }
@@ -3327,11 +3334,20 @@ void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading)
         error(errSyntaxError, -1, message);                                                                                                                                                                                                    \
     }
 
-void Gfx::gouraudFillTriangle(double x0, double y0, GfxColor *color0, double x1, double y1, GfxColor *color1, double x2, double y2, GfxColor *color2, int nComps, int depth, GfxState::ReusablePathIterator *path)
+static bool gouraudOutsideClip(double x0, double y0, double x1, double y1, double x2, double y2, const PDFRectangle &clipBox)
+{
+    return std::max({ x0, x1, x2 }) < clipBox.x1 || std::min({ x0, x1, x2 }) > clipBox.x2 || std::max({ y0, y1, y2 }) < clipBox.y1 || std::min({ y0, y1, y2 }) > clipBox.y2;
+}
+
+void Gfx::gouraudFillTriangle(double x0, double y0, GfxColor *color0, double x1, double y1, GfxColor *color1, double x2, double y2, GfxColor *color2, int nComps, int depth, GfxState::ReusablePathIterator *path, const PDFRectangle &clipBox)
 {
     double x01, y01, x12, y12, x20, y20;
     GfxColor color01, color12, color20;
     int i;
+
+    if (gouraudOutsideClip(x0, y0, x1, y1, x2, y2, clipBox)) {
+        return;
+    }
 
     for (i = 0; i < nComps; ++i) {
         const auto color01Delta = static_cast<int64_t>(color0->c[i]) - static_cast<int64_t>(color1->c[i]);
@@ -3372,15 +3388,19 @@ void Gfx::gouraudFillTriangle(double x0, double y0, GfxColor *color0, double x1,
             color12.c[i] = safeAverage(color1->c[i], color2->c[i]);
             color20.c[i] = safeAverage(color2->c[i], color0->c[i]);
         }
-        gouraudFillTriangle(x0, y0, color0, x01, y01, &color01, x20, y20, &color20, nComps, depth + 1, path);
-        gouraudFillTriangle(x01, y01, &color01, x1, y1, color1, x12, y12, &color12, nComps, depth + 1, path);
-        gouraudFillTriangle(x01, y01, &color01, x12, y12, &color12, x20, y20, &color20, nComps, depth + 1, path);
-        gouraudFillTriangle(x20, y20, &color20, x12, y12, &color12, x2, y2, color2, nComps, depth + 1, path);
+        gouraudFillTriangle(x0, y0, color0, x01, y01, &color01, x20, y20, &color20, nComps, depth + 1, path, clipBox);
+        gouraudFillTriangle(x01, y01, &color01, x1, y1, color1, x12, y12, &color12, nComps, depth + 1, path, clipBox);
+        gouraudFillTriangle(x01, y01, &color01, x12, y12, &color12, x20, y20, &color20, nComps, depth + 1, path, clipBox);
+        gouraudFillTriangle(x20, y20, &color20, x12, y12, &color12, x2, y2, color2, nComps, depth + 1, path, clipBox);
     }
 }
 void Gfx::gouraudFillTriangle(double x0, double y0, double color0, double x1, double y1, double color1, double x2, double y2, double color2, double refineColorThreshold, int depth, GfxGouraudTriangleShading *shading,
-                              GfxState::ReusablePathIterator *path)
+                              GfxState::ReusablePathIterator *path, const PDFRectangle &clipBox)
 {
+    if (gouraudOutsideClip(x0, y0, x1, y1, x2, y2, clipBox)) {
+        return;
+    }
+
     const double meanColor = (color0 + color1 + color2) / 3;
 
     const bool isFineEnough = fabs(color0 - meanColor) < refineColorThreshold && fabs(color1 - meanColor) < refineColorThreshold && fabs(color2 - meanColor) < refineColorThreshold;
@@ -3419,10 +3439,10 @@ void Gfx::gouraudFillTriangle(double x0, double y0, double color0, double x1, do
         const double color12 = (color1 + color2) / 2.;
         const double color20 = (color2 + color0) / 2.;
         ++depth;
-        gouraudFillTriangle(x0, y0, color0, x01, y01, color01, x20, y20, color20, refineColorThreshold, depth, shading, path);
-        gouraudFillTriangle(x01, y01, color01, x1, y1, color1, x12, y12, color12, refineColorThreshold, depth, shading, path);
-        gouraudFillTriangle(x01, y01, color01, x12, y12, color12, x20, y20, color20, refineColorThreshold, depth, shading, path);
-        gouraudFillTriangle(x20, y20, color20, x12, y12, color12, x2, y2, color2, refineColorThreshold, depth, shading, path);
+        gouraudFillTriangle(x0, y0, color0, x01, y01, color01, x20, y20, color20, refineColorThreshold, depth, shading, path, clipBox);
+        gouraudFillTriangle(x01, y01, color01, x1, y1, color1, x12, y12, color12, refineColorThreshold, depth, shading, path, clipBox);
+        gouraudFillTriangle(x01, y01, color01, x12, y12, color12, x20, y20, color20, refineColorThreshold, depth, shading, path, clipBox);
+        gouraudFillTriangle(x20, y20, color20, x12, y12, color12, x2, y2, color2, refineColorThreshold, depth, shading, path, clipBox);
     }
 }
 

@@ -65,6 +65,7 @@
 // Copyright (C) 2026 Adam Sampson <ats@offog.org>
 // Copyright (C) 2026 Stefan Brüns <stefan.bruens@rwth-aachen.de>
 // Copyright (C) 2026 Ojas Maheshwari <workonlyojas@gmail.com>
+// Copyright (C) 2026 Valentin Pohu <pohuvalentin@gmail.com>
 //
 // To see a description of the changes please see the Changelog file that
 // came with your tarball or type make ChangeLog if you are building from git
@@ -96,6 +97,7 @@
 #include "Sound.h"
 #include "DateInfo.h"
 #include "Link.h"
+#include "FileSpec.h"
 #include "UTF.h"
 #include <cstring>
 #include <algorithm>
@@ -7794,6 +7796,8 @@ AnnotRichMedia::Instance::Instance(Dict *dict)
     if (obj1.isDict()) {
         params = std::make_unique<AnnotRichMedia::Params>(obj1.getDict());
     }
+
+    asset = dict->lookup("Asset");
 }
 
 AnnotRichMedia::Instance::~Instance() = default;
@@ -7806,6 +7810,19 @@ AnnotRichMedia::Instance::Type AnnotRichMedia::Instance::getType() const
 const AnnotRichMedia::Params *AnnotRichMedia::Instance::getParams() const
 {
     return params.get();
+}
+
+std::unique_ptr<FileSpec> AnnotRichMedia::Instance::getEmbeddedFile() const
+{
+    if (!asset.isDict()) {
+        return nullptr;
+    }
+    auto fileSpec = std::make_unique<FileSpec>(&asset);
+    const EmbFile *embFile = fileSpec->getEmbeddedFile();
+    if (!embFile || !embFile->isOk()) {
+        return nullptr;
+    }
+    return fileSpec;
 }
 
 AnnotRichMedia::Params::Params(Dict *dict)

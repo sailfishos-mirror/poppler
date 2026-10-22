@@ -17,6 +17,7 @@
  * Copyright (C) 2021 Mahmoud Ahmed Khalil <mahmoudkhalil11@gmail.com>
  * Copyright (C) 2024-2026 g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
  * Copyright (C) 2026 Sune Stolborg Vuorela <sune@vuorela.dk>, work sponsored by the Direction Interministérielle du Numérique
+ * Copyright (C) 2026 Valentin Pohu <pohuvalentin@gmail.com>
  *
  * Adapting code from
  *   Copyright (C) 2004 by Enrico Ros <eros.kde@email.it>
@@ -678,6 +679,10 @@ std::vector<std::unique_ptr<Annotation>> AnnotationPrivate::findAnnotations(::Pa
                             }
 
                             instance->setParams(params);
+                        }
+
+                        if (std::unique_ptr<FileSpec> fileSpec = annotInstance->getEmbeddedFile()) {
+                            instance->setEmbeddedFile(std::unique_ptr<EmbeddedFile>(new EmbeddedFile(*new EmbeddedFileData(std::move(fileSpec)))));
                         }
 
                         instances.append(instance);
@@ -3722,6 +3727,7 @@ public:
 
     RichMediaAnnotation::Instance::Type type;
     RichMediaAnnotation::Params *params = nullptr;
+    std::unique_ptr<EmbeddedFile> embeddedFile;
 };
 
 RichMediaAnnotation::Instance::Instance() : d(new Private) { }
@@ -3747,6 +3753,16 @@ void RichMediaAnnotation::Instance::setParams(RichMediaAnnotation::Params *param
 RichMediaAnnotation::Params *RichMediaAnnotation::Instance::params() const
 {
     return d->params;
+}
+
+void RichMediaAnnotation::Instance::setEmbeddedFile(std::unique_ptr<EmbeddedFile> &&embeddedFile)
+{
+    d->embeddedFile = std::move(embeddedFile);
+}
+
+EmbeddedFile *RichMediaAnnotation::Instance::embeddedFile() const
+{
+    return d->embeddedFile.get();
 }
 
 class RichMediaAnnotation::Configuration::Private

@@ -15,6 +15,7 @@
  * Copyright (C) 2024, 2025, g10 Code GmbH, Author: Sune Stolborg Vuorela <sune@vuorela.dk>
  * Copyright (C) 2025, Aditya Tiwari <suntiwari3495@gmail.com>
  * Copyright (C) 2026, Sune Stolborg Vuorela <sune@vuorela.dk>, work sponsored by the Direction Interministérielle du Numérique
+ * Copyright (C) 2026, Valentin Pohu <pohuvalentin@gmail.com>
  *
  * Adapting code from
  *   Copyright (C) 2004 by Enrico Ros <eros.kde@email.it>
@@ -1220,8 +1221,8 @@ public:
      * The instance object of a RichMediaAnnotation::Configuration object.
      *
      * The instance object represents one media object, that should be shown
-     * on the page. It has a media type and a Params object, to define the
-     * media specific parameters.
+     * on the page. It has a media type, an asset holding the media file and
+     * a Params object, to define the media specific parameters
      */
     class POPPLER_QT6_EXPORT Instance
     {
@@ -1252,9 +1253,17 @@ public:
          */
         RichMediaAnnotation::Params *params() const;
 
+        /**
+         * Returns the embedded file of the instance asset or @c nullptr if the asset is missing or has no embedded file
+         * \note The caller does not get ownership of the returned object
+         * \since 26.11
+         */
+        EmbeddedFile *embeddedFile() const;
+
     private:
         void setType(Type type);
         void setParams(RichMediaAnnotation::Params *params);
+        void setEmbeddedFile(std::unique_ptr<EmbeddedFile> &&embeddedFile);
 
         class Private;
         QScopedPointer<Private> d;

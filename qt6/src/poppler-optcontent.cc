@@ -244,14 +244,6 @@ OptContentModel::~OptContentModel()
     delete d;
 }
 
-void OptContentModelPrivate::setRootNode(OptContentItem *node)
-{
-    q->beginResetModel();
-    delete m_rootNode;
-    m_rootNode = node;
-    q->endResetModel();
-}
-
 QModelIndex OptContentModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (row < 0 || column != 0) {

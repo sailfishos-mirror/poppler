@@ -3958,6 +3958,15 @@ class RichMediaAnnotation::Settings::Private : public QSharedData
 public:
     Private() = default;
 
+    ~Private()
+    {
+        delete activation;
+        delete deactivation;
+    }
+
+    Private(const Private &) = delete;
+    Private &operator=(const Private &) = delete;
+
     RichMediaAnnotation::Activation *activation = nullptr;
     RichMediaAnnotation::Deactivation *deactivation = nullptr;
 };

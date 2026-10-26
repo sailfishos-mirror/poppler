@@ -1262,7 +1262,7 @@ public:
 
     private:
         void setType(Type type);
-        void setParams(RichMediaAnnotation::Params *params);
+        void setParams(std::unique_ptr<RichMediaAnnotation::Params> &&params);
         void setEmbeddedFile(std::unique_ptr<EmbeddedFile> &&embeddedFile);
 
         class Private;
@@ -1345,7 +1345,7 @@ public:
 
     private:
         void setName(const QString &name);
-        void setEmbeddedFile(EmbeddedFile *embeddedFile);
+        void setEmbeddedFile(std::unique_ptr<EmbeddedFile> &&embeddedFile);
 
         class Private;
         QScopedPointer<Private> d;
@@ -1480,8 +1480,8 @@ public:
         RichMediaAnnotation::Deactivation *deactivation() const;
 
     private:
-        void setActivation(RichMediaAnnotation::Activation *activation);
-        void setDeactivation(RichMediaAnnotation::Deactivation *deactivation);
+        void setActivation(std::unique_ptr<RichMediaAnnotation::Activation> &&activation);
+        void setDeactivation(std::unique_ptr<RichMediaAnnotation::Deactivation> &&deactivation);
 
         class Private;
         QScopedPointer<Private> d;
@@ -1498,8 +1498,8 @@ public:
     RichMediaAnnotation::Content *content() const;
 
 private:
-    void setSettings(RichMediaAnnotation::Settings *settings);
-    void setContent(RichMediaAnnotation::Content *content);
+    void setSettings(std::unique_ptr<RichMediaAnnotation::Settings> &&settings);
+    void setContent(std::unique_ptr<RichMediaAnnotation::Content> &&content);
 
     RichMediaAnnotation();
     explicit RichMediaAnnotation(RichMediaAnnotationPrivate &dd);

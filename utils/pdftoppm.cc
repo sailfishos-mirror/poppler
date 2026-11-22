@@ -116,6 +116,7 @@ static GfxLCMSProfilePtr defaultcmykprofile;
 static char sep[2] = "-";
 static bool forceNum = false;
 static bool png = false;
+static char pngCompression[3] = "9";
 static bool jpeg = false;
 static bool jpegcmyk = false;
 static bool tiff = false;
@@ -178,6 +179,7 @@ static const ArgDesc argDesc[] = { { .arg = "-f", .kind = argInt, .val = &firstP
                                    { .arg = "-forcenum", .kind = argFlag, .val = &forceNum, .size = 0, .usage = "force page number even if there is only one page " },
 #if ENABLE_LIBPNG
                                    { .arg = "-png", .kind = argFlag, .val = &png, .size = 0, .usage = "generate a PNG file" },
+                                   { .arg = "-pngcompression", .kind = argString, .val = pngCompression, .size = sizeof(pngCompression), .usage = "set PNG compression level from 0 to 9 (default is 9)" },
 #endif
 #if ENABLE_LIBJPEG
                                    { .arg = "-jpeg", .kind = argFlag, .val = &jpeg, .size = 0, .usage = "generate a JPEG file" },
@@ -298,12 +300,13 @@ static void savePageSlice(PDFDoc *doc, SplashOutputDev *splashOut, int pg, int x
     params.jpegProgressive = jpegProgressive;
     params.jpegOptimize = jpegOptimize;
     params.tiffCompression = TiffCompressionStr;
+    params.pngCompressionLevel = pngCompression[0] - '0';
 
     if (ppmFile != nullptr) {
         SplashError e;
 
         if (png) {
-            e = bitmap->writeImgFile(splashFormatPng, ppmFile, x_resolution, y_resolution);
+            e = bitmap->writeImgFile(splashFormatPng, ppmFile, x_resolution, y_resolution, &params);
         } else if (jpeg) {
             e = bitmap->writeImgFile(splashFormatJpeg, ppmFile, x_resolution, y_resolution, &params);
         } else if (jpegcmyk) {
@@ -323,7 +326,7 @@ static void savePageSlice(PDFDoc *doc, SplashOutputDev *splashOut, int pg, int x
 #endif
 
         if (png) {
-            bitmap->writeImgFile(splashFormatPng, stdout, x_resolution, y_resolution);
+            bitmap->writeImgFile(splashFormatPng, stdout, x_resolution, y_resolution, &params);
         } else if (jpeg) {
             bitmap->writeImgFile(splashFormatJpeg, stdout, x_resolution, y_resolution, &params);
         } else if (tiff) {
@@ -436,6 +439,10 @@ int main(int argc, char *argv[])
         if (printVersion || printHelp) {
             return 0;
         }
+        return kOtherError;
+    }
+    if (pngCompression[0] < '0' || pngCompression[0] > '9' || pngCompression[1] != '\0') {
+        fprintf(stderr, "Bad '-pngcompression' value. Expected a single digit from 0 to 9.\n");
         return kOtherError;
     }
     if (argc > 1) {

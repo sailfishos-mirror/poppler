@@ -86,6 +86,7 @@ public:
         bool jpegProgressive = false;
         std::string tiffCompression;
         bool jpegOptimize = false;
+        int pngCompressionLevel = -1;
     };
 
     SplashError writeImgFile(SplashImageFileFormat format, const char *fileName, double hDPI, double vDPI, WriteImgParams *params = nullptr);

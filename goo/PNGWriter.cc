@@ -38,6 +38,7 @@ struct PNGWriterPrivate
     int icc_data_size = 0;
     char *icc_name = nullptr;
     bool sRGB_profile = false;
+    int compressionLevel = Z_BEST_COMPRESSION;
 
     PNGWriterPrivate(const PNGWriterPrivate &) = delete;
     PNGWriterPrivate &operator=(const PNGWriterPrivate &) = delete;
@@ -71,6 +72,13 @@ void PNGWriter::setICCProfile(const char *name, unsigned char *data, int size)
 void PNGWriter::setSRGBProfile()
 {
     priv->sRGB_profile = true;
+}
+
+void PNGWriter::setCompressionLevel(int level)
+{
+    if (level >= Z_NO_COMPRESSION && level <= Z_BEST_COMPRESSION) {
+        priv->compressionLevel = level;
+    }
 }
 
 bool PNGWriter::init(FILE *f, int width, int height, double hDPI, double vDPI)
@@ -115,7 +123,7 @@ bool PNGWriter::init(FILE *f, int width, int height, double hDPI, double vDPI)
     }
 
     // Set up the type of PNG image and the compression level
-    png_set_compression_level(priv->png_ptr, Z_BEST_COMPRESSION);
+    png_set_compression_level(priv->png_ptr, priv->compressionLevel);
 
     // Silence silly gcc
     png_byte bit_depth = -1;

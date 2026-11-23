@@ -85,13 +85,17 @@ QPainterOutputDevType3Font::QPainterOutputDevType3Font(PDFDoc *doc, const std::s
     const char *name;
     const Dict *charProcs = font->getCharProcs();
 
-    // Storage for the rendered glyphs
-    glyphs.resize(charProcs->getLength());
-
     // Compute the code-to-GID map
     const std::array<const char *, 256> &enc = font->getEncoding();
 
     codeToGID.resize(256);
+
+    if (!charProcs) {
+        return;
+    }
+
+    // Storage for the rendered glyphs
+    glyphs.resize(charProcs->getLength());
 
     for (int i = 0; i < 256; ++i) {
         codeToGID[i] = 0;
@@ -107,6 +111,12 @@ QPainterOutputDevType3Font::QPainterOutputDevType3Font(PDFDoc *doc, const std::s
 
 const QPicture &QPainterOutputDevType3Font::getGlyph(int gid) const
 {
+    static const QPicture emptyGlyph;
+
+    if (gid >= static_cast<int>(glyphs.size())) {
+        return emptyGlyph;
+    }
+
     if (!glyphs[gid]) {
 
         // Glyph has not been rendered before: render it now
@@ -132,6 +142,9 @@ const QPicture &QPainterOutputDevType3Font::getGlyph(int gid) const
         output_dev->startPage(1, gfx->getState(), gfx->getXRef());
 
         const Dict *charProcs = m_font->getCharProcs();
+        if (!charProcs) {
+            return emptyGlyph;
+        }
         Object charProc = charProcs->getVal(gid);
         gfx->display(&charProc);
 

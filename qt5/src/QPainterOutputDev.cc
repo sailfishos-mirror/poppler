@@ -960,6 +960,11 @@ void QPainterOutputDev::drawImageMask(GfxState * /*state*/, Object * /*ref*/, St
 
     // TODO: Would using QImage::Format_Mono be more efficient here?
     QImage image(width, height, QImage::Format_ARGB32);
+    if (image.isNull()) {
+        error(errSyntaxWarning, -1, "Failed to allocate ImageMask");
+        imgStr->close();
+        return;
+    }
     auto *data = reinterpret_cast<unsigned int *>(image.bits());
     int stride = image.bytesPerLine() / 4;
 
@@ -1005,6 +1010,11 @@ void QPainterOutputDev::drawImage(GfxState * /*state*/, Object * /*ref*/, Stream
     }
 
     image = QImage(width, height, QImage::Format_ARGB32);
+    if (image.isNull()) {
+        error(errSyntaxWarning, -1, "Failed to allocate Image");
+        imgStr->close();
+        return;
+    }
     data = reinterpret_cast<unsigned int *>(image.bits());
     stride = image.bytesPerLine() / 4;
     for (y = 0; y < height; y++) {
@@ -1069,6 +1079,10 @@ void QPainterOutputDev::drawSoftMaskedImage(GfxState *state, Object *ref, Stream
     }
 
     QImage image(width, height, QImage::Format_ARGB32);
+    if (image.isNull()) {
+        error(errSyntaxWarning, -1, "Failed to allocate SoftMaskedImage");
+        return;
+    }
     auto *data = reinterpret_cast<unsigned int *>(image.bits());
     int stride = image.bytesPerLine() / 4;
 

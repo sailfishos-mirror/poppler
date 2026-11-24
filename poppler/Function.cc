@@ -34,6 +34,7 @@
 #include <config.h>
 
 #include <climits>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
@@ -981,7 +982,8 @@ public:
             return;
         }
         --sp;
-        if (sp + i + 1 >= psStackSize) [[unlikely]] {
+        const int64_t index = static_cast<int64_t>(sp) + i + 1;
+        if (index >= psStackSize) [[unlikely]] {
             error(errSyntaxError, -1, "Stack underflow in PostScript function");
             return;
         }
@@ -989,7 +991,7 @@ public:
             error(errSyntaxError, -1, "Stack overflow in PostScript function");
             return;
         }
-        stack[sp] = stack[sp + 1 + i];
+        stack[sp] = stack[index];
     }
     void pop()
     {

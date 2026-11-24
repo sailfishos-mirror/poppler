@@ -3621,8 +3621,12 @@ SplashError Splash::drawImage(SplashImageSource src, SplashICCTransform tf, void
         clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
-            scaledWidth = x1 - x0;
-            scaledHeight = y1 - y0;
+            if (checkedSubtraction(x1, x0, &scaledWidth)) {
+                return SplashError::BadArg;
+            }
+            if (checkedSubtraction(y1, y0, &scaledHeight)) {
+                return SplashError::BadArg;
+            }
             yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;

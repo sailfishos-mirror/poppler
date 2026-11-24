@@ -2874,7 +2874,6 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     }
 
     // compute the scale factors
-    static_assert(std::numeric_limits<int>::digits == 31, "64-bit subtraction avoids overflow with 32-bit int");
     int64_t t0, t1;
     if (mat[0] >= 0) {
         t0 = static_cast<int64_t>(imgCoordMungeUpperC(mat[0] + mat[4], glyphMode)) - imgCoordMungeLowerC(mat[4], glyphMode);

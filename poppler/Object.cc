@@ -27,12 +27,16 @@
 #include <config.h>
 
 #include <cstddef>
+#include <cstdint>
+#include <limits>
 #include "Object.h"
 #include "Array.h"
 #include "Dict.h"
 #include "Stream.h"
 #include "XRef.h"
 #include "goo/gmem.h"
+
+static_assert(std::numeric_limits<int>::digits == std::numeric_limits<std::int32_t>::digits, "64-bit intermediates are used to detect overflow and underflow in 32-bit int arithmetic");
 
 //------------------------------------------------------------------------
 // Object

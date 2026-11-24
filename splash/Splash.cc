@@ -2768,15 +2768,11 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
     if (mat[0] > 0 && minorAxisZero && mat[3] > 0) {
         const int x0 = imgCoordMungeLowerC(mat[4], glyphMode);
         const int y0 = imgCoordMungeLowerC(mat[5], glyphMode);
-        int x1 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
-        int y1 = imgCoordMungeUpperC(mat[3] + mat[5], glyphMode);
+        const int x1Unadjusted = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
+        const int y1Unadjusted = imgCoordMungeUpperC(mat[3] + mat[5], glyphMode);
         // make sure narrow images cover at least one pixel
-        if (x0 == x1) {
-            ++x1;
-        }
-        if (y0 == y1) {
-            ++y1;
-        }
+        const int x1 = x0 == x1Unadjusted ? x1Unadjusted + 1 : x1Unadjusted;
+        const int y1 = y0 == y1Unadjusted ? y1Unadjusted + 1 : y1Unadjusted;
         const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
@@ -2796,15 +2792,11 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
     } else if (mat[0] > 0 && minorAxisZero && mat[3] < 0) {
         const int x0 = imgCoordMungeLowerC(mat[4], glyphMode);
         const int y0 = imgCoordMungeLowerC(mat[3] + mat[5], glyphMode);
-        int x1 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
-        int y1 = imgCoordMungeUpperC(mat[5], glyphMode);
+        const int x1Unadjusted = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
+        const int y1Unadjusted = imgCoordMungeUpperC(mat[5], glyphMode);
         // make sure narrow images cover at least one pixel
-        if (x0 == x1) {
-            ++x1;
-        }
-        if (y0 == y1) {
-            ++y1;
-        }
+        const int x1 = x0 == x1Unadjusted ? x1Unadjusted + 1 : x1Unadjusted;
+        const int y1 = y0 == y1Unadjusted ? y1Unadjusted + 1 : y1Unadjusted;
         const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {

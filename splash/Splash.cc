@@ -37,8 +37,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <climits>
+#include <cstdint>
 #include <cassert>
 #include <cmath>
+#include <limits>
 #include <numbers>
 #include "goo/gmem.h"
 #include "poppler/GfxState.h"
@@ -2825,7 +2827,7 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
 {
     SplashClipResult clipRes, clipRes2;
     SplashPipe pipe;
-    int scaledWidth, scaledHeight, t0, t1;
+    int scaledWidth, scaledHeight;
     double r00, r01, r10, r11, det, ir00, ir01, ir10, ir11;
     double vx[4], vy[4];
     int xMin, yMin, xMax, yMax;
@@ -2857,7 +2859,7 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     yMin = imgCoordMungeLowerC(vy[0], glyphMode);
     yMax = imgCoordMungeUpperC(vy[0], glyphMode);
     for (i = 1; i < 4; ++i) {
-        t0 = imgCoordMungeLowerC(vx[i], glyphMode);
+        int t0 = imgCoordMungeLowerC(vx[i], glyphMode);
         if (t0 < xMin) {
             xMin = t0;
         }
@@ -2865,7 +2867,7 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
         if (t0 > xMax) {
             xMax = t0;
         }
-        t1 = imgCoordMungeLowerC(vy[i], glyphMode);
+        int t1 = imgCoordMungeLowerC(vy[i], glyphMode);
         if (t1 < yMin) {
             yMin = t1;
         }
@@ -2881,28 +2883,40 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     }
 
     // compute the scale factors
+    static_assert(std::numeric_limits<int>::digits == 31, "64-bit subtraction avoids overflow with 32-bit int");
+    int64_t t0, t1;
     if (mat[0] >= 0) {
-        t0 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode) - imgCoordMungeLowerC(mat[4], glyphMode);
+        t0 = static_cast<int64_t>(imgCoordMungeUpperC(mat[0] + mat[4], glyphMode)) - imgCoordMungeLowerC(mat[4], glyphMode);
     } else {
-        t0 = imgCoordMungeUpperC(mat[4], glyphMode) - imgCoordMungeLowerC(mat[0] + mat[4], glyphMode);
+        t0 = static_cast<int64_t>(imgCoordMungeUpperC(mat[4], glyphMode)) - imgCoordMungeLowerC(mat[0] + mat[4], glyphMode);
     }
     if (mat[1] >= 0) {
-        t1 = imgCoordMungeUpperC(mat[1] + mat[5], glyphMode) - imgCoordMungeLowerC(mat[5], glyphMode);
+        t1 = static_cast<int64_t>(imgCoordMungeUpperC(mat[1] + mat[5], glyphMode)) - imgCoordMungeLowerC(mat[5], glyphMode);
     } else {
-        t1 = imgCoordMungeUpperC(mat[5], glyphMode) - imgCoordMungeLowerC(mat[1] + mat[5], glyphMode);
+        t1 = static_cast<int64_t>(imgCoordMungeUpperC(mat[5], glyphMode)) - imgCoordMungeLowerC(mat[1] + mat[5], glyphMode);
     }
-    scaledWidth = t0 > t1 ? t0 : t1;
+    const int64_t scaledWidth64 = std::max(t0, t1);
+    if (scaledWidth64 > std::numeric_limits<int>::max()) [[unlikely]] {
+        error(errInternal, -1, "arbitraryTransformMask scale width exceeds integer range");
+        return;
+    }
+    scaledWidth = static_cast<int>(scaledWidth64);
     if (mat[2] >= 0) {
-        t0 = imgCoordMungeUpperC(mat[2] + mat[4], glyphMode) - imgCoordMungeLowerC(mat[4], glyphMode);
+        t0 = static_cast<int64_t>(imgCoordMungeUpperC(mat[2] + mat[4], glyphMode)) - imgCoordMungeLowerC(mat[4], glyphMode);
     } else {
-        t0 = imgCoordMungeUpperC(mat[4], glyphMode) - imgCoordMungeLowerC(mat[2] + mat[4], glyphMode);
+        t0 = static_cast<int64_t>(imgCoordMungeUpperC(mat[4], glyphMode)) - imgCoordMungeLowerC(mat[2] + mat[4], glyphMode);
     }
     if (mat[3] >= 0) {
-        t1 = imgCoordMungeUpperC(mat[3] + mat[5], glyphMode) - imgCoordMungeLowerC(mat[5], glyphMode);
+        t1 = static_cast<int64_t>(imgCoordMungeUpperC(mat[3] + mat[5], glyphMode)) - imgCoordMungeLowerC(mat[5], glyphMode);
     } else {
-        t1 = imgCoordMungeUpperC(mat[5], glyphMode) - imgCoordMungeLowerC(mat[3] + mat[5], glyphMode);
+        t1 = static_cast<int64_t>(imgCoordMungeUpperC(mat[5], glyphMode)) - imgCoordMungeLowerC(mat[3] + mat[5], glyphMode);
     }
-    scaledHeight = t0 > t1 ? t0 : t1;
+    const int64_t scaledHeight64 = std::max(t0, t1);
+    if (scaledHeight64 > std::numeric_limits<int>::max()) [[unlikely]] {
+        error(errInternal, -1, "arbitraryTransformMask scale height exceeds integer range");
+        return;
+    }
+    scaledHeight = static_cast<int>(scaledHeight64);
     if (scaledWidth == 0) {
         scaledWidth = 1;
     }

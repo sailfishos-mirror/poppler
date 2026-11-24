@@ -31,6 +31,20 @@ set(poppler_qt5_SRCS
   poppler-outline.cc
   QPainterOutputDev.cc
   poppler-version.cpp
+  poppler-annotation-helper.h
+  poppler-annotation-private.h
+  poppler-converter-private.h
+  poppler-embeddedfile-private.h
+  poppler-link-extractor-private.h
+  poppler-link-private.h
+  poppler-optcontent-private.h
+  poppler-outline-private.h
+  poppler-page-private.h
+  poppler-page-transition-private.h
+  poppler-private.h
+  poppler-qiodeviceinstream-private.h
+  poppler-qiodeviceoutstream-private.h
+  QPainterOutputDev.h
 )
 add_library(poppler-qt5 ${poppler_qt5_SRCS})
 generate_export_header(poppler-qt5 BASE_NAME poppler-qt5 EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/poppler-export.h")

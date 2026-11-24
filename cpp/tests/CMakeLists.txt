@@ -19,9 +19,29 @@ cpp_add_simpletest(poppler-render poppler-render.cpp ${CMAKE_SOURCE_DIR}/utils/p
 cpp_add_simpletest(poppler-alpha-bg-test poppler-alpha-bg-test.cpp)
 
 if(ENABLE_FUZZER)
-  cpp_add_simpletest(doc_fuzzer ./fuzzing/doc_fuzzer.cc)
-  cpp_add_simpletest(pdf_fuzzer ./fuzzing/pdf_fuzzer.cc)
-  cpp_add_simpletest(pdf_file_fuzzer ./fuzzing/pdf_file_fuzzer.cc)
-  cpp_add_simpletest(page_label_fuzzer ./fuzzing/page_label_fuzzer.cc)
-  cpp_add_simpletest(page_search_fuzzer ./fuzzing/page_search_fuzzer.cc)
+  cpp_add_simpletest(doc_fuzzer
+    ./fuzzing/doc_fuzzer.cc
+    ./fuzzing/fuzzer_init.h
+    ./fuzzing/FuzzedDataProvider.h
+  )
+  cpp_add_simpletest(pdf_fuzzer
+    ./fuzzing/pdf_fuzzer.cc
+    ./fuzzing/fuzzer_init.h
+  )
+  cpp_add_simpletest(pdf_file_fuzzer
+    ./fuzzing/pdf_file_fuzzer.cc
+    ./fuzzing/fuzzer_init.h
+    ./fuzzing/fuzzer_temp_file.h
+    ./fuzzing/FuzzedDataProvider.h
+  )
+  cpp_add_simpletest(page_label_fuzzer
+    ./fuzzing/page_label_fuzzer.cc
+    ./fuzzing/fuzzer_init.h
+    ./fuzzing/FuzzedDataProvider.h
+  )
+  cpp_add_simpletest(page_search_fuzzer
+    ./fuzzing/page_search_fuzzer.cc
+    ./fuzzing/fuzzer_init.h
+    ./fuzzing/FuzzedDataProvider.h
+  )
 endif()

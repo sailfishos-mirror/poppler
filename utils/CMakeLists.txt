@@ -4,6 +4,8 @@ include(FindIntl)
 set(common_srcs
   parseargs.cc
   Win32Console.cc
+  parseargs.h
+  Win32Console.h
 )
 add_library(utils_common_lib STATIC ${common_srcs})
 target_link_libraries(utils_common_lib PUBLIC poppler)
@@ -16,6 +18,8 @@ set(common_libs
 set(pdftoppm_SOURCES
   pdftoppm.cc
   sanitychecks.cc
+  numberofcharacters.h
+  sanitychecks.h
 )
 add_executable(pdftoppm ${pdftoppm_SOURCES})
 target_link_libraries(pdftoppm ${common_libs})
@@ -34,6 +38,11 @@ if (HAVE_CAIRO)
     ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.cc
     ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.cc
     ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.cc
+    ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.h
+    ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.h
+    ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.h
+    pdftocairo-win32.h
+    numberofcharacters.h
   )
   include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -92,6 +101,7 @@ install(FILES pdfimages.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 # pdfinfo
 set(pdfinfo_SOURCES
   pdfinfo.cc printencodings.cc
+  printencodings.h
 )
 add_executable(pdfinfo ${pdfinfo_SOURCES})
 target_link_libraries(pdfinfo ${common_libs})
@@ -125,6 +135,7 @@ endif ()
 set(pdftops_SOURCES
   pdftops.cc
   sanitychecks.cc
+  sanitychecks.h
 )
 add_executable(pdftops ${pdftops_SOURCES})
 target_link_libraries(pdftops ${common_libs})
@@ -138,6 +149,8 @@ install(FILES pdftops.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 # pdftotext
 set(pdftotext_SOURCES
   pdftotext.cc printencodings.cc
+  numberofcharacters.h
+  printencodings.h
 )
 add_executable(pdftotext ${pdftotext_SOURCES})
 target_link_libraries(pdftotext ${common_libs})
@@ -151,6 +164,11 @@ set(pdftohtml_SOURCES
   HtmlFonts.cc
   HtmlLinks.cc
   HtmlOutputDev.cc
+  HtmlFonts.h
+  HtmlLinks.h
+  HtmlOutputDev.h
+  HtmlUtils.h
+  InMemoryFile.h
 )
 add_executable(pdftohtml ${pdftohtml_SOURCES})
 target_link_libraries(pdftohtml ${common_libs})

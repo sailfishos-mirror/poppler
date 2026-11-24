@@ -21,6 +21,13 @@ set(poppler_cpp_SRCS
   poppler-rectangle.cpp
   poppler-toc.cpp
   poppler-version.cpp
+  poppler-destination-private.h
+  poppler-document-private.h
+  poppler-embedded-file-private.h
+  poppler-image-private.h
+  poppler-page-private.h
+  poppler-private.h
+  poppler-toc-private.h
 )
 
 add_library(poppler-cpp ${poppler_cpp_SRCS})

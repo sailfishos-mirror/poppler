@@ -20,6 +20,19 @@ set(poppler_qt6viewer_SRCS
   thumbnails.cpp
   toc.cpp
   viewer.cpp
+  abstractinfodock.h
+  documentobserver.h
+  embeddedfiles.h
+  fonts.h
+  info.h
+  metadata.h
+  navigationtoolbar.h
+  optcontent.h
+  pageview.h
+  permissions.h
+  thumbnails.h
+  toc.h
+  viewer.h
 )
 
 poppler_add_test(poppler_qt6viewer BUILD_QT6_TESTS ${poppler_qt6viewer_SRCS})

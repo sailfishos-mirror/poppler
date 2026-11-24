@@ -82,13 +82,23 @@ set(poppler_glib_SRCS
   poppler-input-stream.cc
   poppler-structure-element.cc
 )
+set(poppler_glib_private_headers
+  poppler-cached-file-loader.h
+  poppler-input-stream.h
+  poppler-private.h
+)
 set(poppler_glib_generated_SRCS
   ${CMAKE_CURRENT_BINARY_DIR}/poppler-enums.c
+)
+set(poppler_glib_poppler_SRCS
   ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.cc
   ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.cc
   ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.cc
+  ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.h
+  ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.h
+  ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.h
 )
-add_library(poppler-glib ${poppler_glib_SRCS} ${poppler_glib_generated_SRCS})
+add_library(poppler-glib ${poppler_glib_SRCS} ${poppler_glib_private_headers} ${poppler_glib_generated_SRCS} ${poppler_glib_poppler_SRCS})
 generate_export_header(poppler-glib EXPORT_MACRO_NAME POPPLER_PUBLIC EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/poppler-macros.h")
 set_target_properties(poppler-glib PROPERTIES VERSION 8.31.0 SOVERSION 8)
 if(MINGW AND BUILD_SHARED_LIBS)

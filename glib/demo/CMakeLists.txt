@@ -19,6 +19,25 @@ set(poppler_glib_demo_SRCS
   selections.c
   taggedstruct.c
   signature.c
+  annots.h
+  attachments.h
+  find.h
+  fonts.h
+  forms.h
+  images.h
+  info.h
+  layers.h
+  links.h
+  outline.h
+  page.h
+  print.h
+  render.h
+  selections.h
+  signature.h
+  taggedstruct.h
+  text.h
+  transitions.h
+  utils.h
 )
 poppler_add_test(poppler-glib-demo BUILD_GTK_TESTS ${poppler_glib_demo_SRCS})
 

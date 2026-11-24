@@ -23,9 +23,13 @@ if (GTK_FOUND)
 
     set (pdf_inspector_SRCS
       pdf-inspector.cc
+      pdf-operators.h
       ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.cc
       ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.cc
       ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.cc
+      ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.h
+      ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.h
+      ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.h
     )
     poppler_add_test(pdf-inspector BUILD_GTK_TESTS ${pdf_inspector_SRCS})
     target_link_libraries(pdf-inspector ${CAIRO_LIBRARIES} Freetype::Freetype ${common_libs} PkgConfig::GTK3 poppler)
@@ -50,6 +54,10 @@ if (HAVE_CAIRO)
       ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.cc
       ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.cc
       ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.cc
+      ${CMAKE_SOURCE_DIR}/poppler/CairoFontEngine.h
+      ${CMAKE_SOURCE_DIR}/poppler/CairoOutputDev.h
+      ${CMAKE_SOURCE_DIR}/poppler/CairoRescaleBox.h
+      ${CMAKE_SOURCE_DIR}/utils/numberofcharacters.h
       )
     add_executable(cairo-thread-test ${cairo_thread_test_SRCS})
     target_link_libraries(cairo-thread-test ${CAIRO_LIBRARIES} Freetype::Freetype Threads::Threads poppler)

@@ -3508,11 +3508,7 @@ void Splash::blitMask(const SplashBitmap &src, int xDest, int yDest, SplashClipR
 SplashError Splash::drawImage(SplashImageSource src, SplashICCTransform tf, void *srcData, SplashColorMode srcMode, bool srcAlpha, int w, int h, const std::array<double, 6> &mat, bool interpolate, bool tilingPattern)
 {
     bool ok;
-    SplashClipResult clipRes;
-    bool minorAxisZero;
-    int x0, y0, x1, y1, scaledWidth, scaledHeight;
     int nComps;
-    int yp;
 
     if (debugMode) {
         printf("drawImage: srcMode=%d srcAlpha=%d w=%d h=%d mat=[%.2f %.2f %.2f %.2f %.2f %.2f]\n", srcMode, srcAlpha, w, h, mat[0], mat[1], mat[2], mat[3], mat[4], mat[5]);
@@ -3560,14 +3556,14 @@ SplashError Splash::drawImage(SplashImageSource src, SplashICCTransform tf, void
         return SplashError::SingularMatrix;
     }
 
-    minorAxisZero = mat[1] == 0 && mat[2] == 0;
+    const bool minorAxisZero = mat[1] == 0 && mat[2] == 0;
 
     // scaling only
     if (mat[0] > 0 && minorAxisZero && mat[3] > 0) {
-        x0 = imgCoordMungeLower(mat[4]);
-        y0 = imgCoordMungeLower(mat[5]);
-        x1 = imgCoordMungeUpper(mat[0] + mat[4]);
-        y1 = imgCoordMungeUpper(mat[3] + mat[5]);
+        int x0 = imgCoordMungeLower(mat[4]);
+        int y0 = imgCoordMungeLower(mat[5]);
+        int x1 = imgCoordMungeUpper(mat[0] + mat[4]);
+        int y1 = imgCoordMungeUpper(mat[3] + mat[5]);
         // make sure narrow images cover at least one pixel
         if (x0 == x1) {
             ++x1;
@@ -3575,16 +3571,17 @@ SplashError Splash::drawImage(SplashImageSource src, SplashICCTransform tf, void
         if (y0 == y1) {
             ++y1;
         }
-        clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
+        const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
+            int scaledWidth, scaledHeight;
             if (checkedSubtraction(x1, x0, &scaledWidth)) {
                 return SplashError::BadArg;
             }
             if (checkedSubtraction(y1, y0, &scaledHeight)) {
                 return SplashError::BadArg;
             }
-            yp = h / scaledHeight;
+            const int yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;
             }
@@ -3600,10 +3597,10 @@ SplashError Splash::drawImage(SplashImageSource src, SplashICCTransform tf, void
 
         // scaling plus vertical flip
     } else if (mat[0] > 0 && minorAxisZero && mat[3] < 0) {
-        x0 = imgCoordMungeLower(mat[4]);
-        y0 = imgCoordMungeLower(mat[3] + mat[5]);
-        x1 = imgCoordMungeUpper(mat[0] + mat[4]);
-        y1 = imgCoordMungeUpper(mat[5]);
+        int x0 = imgCoordMungeLower(mat[4]);
+        int y0 = imgCoordMungeLower(mat[3] + mat[5]);
+        int x1 = imgCoordMungeUpper(mat[0] + mat[4]);
+        int y1 = imgCoordMungeUpper(mat[5]);
         if (x0 == x1) {
             if (mat[4] + mat[0] * 0.5 < x0) {
                 --x0;
@@ -3618,16 +3615,17 @@ SplashError Splash::drawImage(SplashImageSource src, SplashICCTransform tf, void
                 ++y1;
             }
         }
-        clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
+        const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
+            int scaledWidth, scaledHeight;
             if (checkedSubtraction(x1, x0, &scaledWidth)) {
                 return SplashError::BadArg;
             }
             if (checkedSubtraction(y1, y0, &scaledHeight)) {
                 return SplashError::BadArg;
             }
-            yp = h / scaledHeight;
+            const int yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;
             }

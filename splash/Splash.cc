@@ -2749,11 +2749,6 @@ void Splash::fillGlyph2(int x0, int y0, SplashGlyphBitmap *glyph, bool noClip)
 
 SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int w, int h, const std::array<double, 6> &mat, bool glyphMode)
 {
-    SplashClipResult clipRes;
-    bool minorAxisZero;
-    int x0, y0, x1, y1, scaledWidth, scaledHeight;
-    int yp;
-
     if (debugMode) {
         printf("fillImageMask: w=%d h=%d mat=[%.2f %.2f %.2f %.2f %.2f %.2f]\n", w, h, mat[0], mat[1], mat[2], mat[3], mat[4], mat[5]);
     }
@@ -2767,14 +2762,14 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
         return SplashError::SingularMatrix;
     }
 
-    minorAxisZero = mat[1] == 0 && mat[2] == 0;
+    const bool minorAxisZero = mat[1] == 0 && mat[2] == 0;
 
     // scaling only
     if (mat[0] > 0 && minorAxisZero && mat[3] > 0) {
-        x0 = imgCoordMungeLowerC(mat[4], glyphMode);
-        y0 = imgCoordMungeLowerC(mat[5], glyphMode);
-        x1 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
-        y1 = imgCoordMungeUpperC(mat[3] + mat[5], glyphMode);
+        const int x0 = imgCoordMungeLowerC(mat[4], glyphMode);
+        const int y0 = imgCoordMungeLowerC(mat[5], glyphMode);
+        int x1 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
+        int y1 = imgCoordMungeUpperC(mat[3] + mat[5], glyphMode);
         // make sure narrow images cover at least one pixel
         if (x0 == x1) {
             ++x1;
@@ -2782,12 +2777,12 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
         if (y0 == y1) {
             ++y1;
         }
-        clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
+        const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
-            scaledWidth = x1 - x0;
-            scaledHeight = y1 - y0;
-            yp = h / scaledHeight;
+            const int scaledWidth = x1 - x0;
+            const int scaledHeight = y1 - y0;
+            const int yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;
             }
@@ -2797,10 +2792,10 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
 
         // scaling plus vertical flip
     } else if (mat[0] > 0 && minorAxisZero && mat[3] < 0) {
-        x0 = imgCoordMungeLowerC(mat[4], glyphMode);
-        y0 = imgCoordMungeLowerC(mat[3] + mat[5], glyphMode);
-        x1 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
-        y1 = imgCoordMungeUpperC(mat[5], glyphMode);
+        const int x0 = imgCoordMungeLowerC(mat[4], glyphMode);
+        const int y0 = imgCoordMungeLowerC(mat[3] + mat[5], glyphMode);
+        int x1 = imgCoordMungeUpperC(mat[0] + mat[4], glyphMode);
+        int y1 = imgCoordMungeUpperC(mat[5], glyphMode);
         // make sure narrow images cover at least one pixel
         if (x0 == x1) {
             ++x1;
@@ -2808,12 +2803,12 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
         if (y0 == y1) {
             ++y1;
         }
-        clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
+        const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
-            scaledWidth = x1 - x0;
-            scaledHeight = y1 - y0;
-            yp = h / scaledHeight;
+            const int scaledWidth = x1 - x0;
+            const int scaledHeight = y1 - y0;
+            const int yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;
             }

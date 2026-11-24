@@ -2828,25 +2828,16 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     SplashClipResult clipRes, clipRes2;
     SplashPipe pipe;
     int scaledWidth, scaledHeight;
-    double r00, r01, r10, r11, det, ir00, ir01, ir10, ir11;
-    double vx[4], vy[4];
     int xMin, yMin, xMax, yMax;
     ImageSection section[3];
     int nSections;
-    int y, xa, xb, x, i, xx, yy;
 
     // compute the four vertices of the target quadrilateral
-    vx[0] = mat[4];
-    vy[0] = mat[5];
-    vx[1] = mat[2] + mat[4];
-    vy[1] = mat[3] + mat[5];
-    vx[2] = mat[0] + mat[2] + mat[4];
-    vy[2] = mat[1] + mat[3] + mat[5];
-    vx[3] = mat[0] + mat[4];
-    vy[3] = mat[1] + mat[5];
+    const double vx[4] = { mat[4], mat[2] + mat[4], mat[0] + mat[2] + mat[4], mat[0] + mat[4] };
+    const double vy[4] = { mat[5], mat[3] + mat[5], mat[1] + mat[3] + mat[5], mat[1] + mat[5] };
 
     // make sure vx/vy fit in integers since we're transforming them to in the next lines
-    for (i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i) {
         if (vx[i] < INT_MIN || vx[i] > INT_MAX || vy[i] < INT_MIN || vy[i] > INT_MAX) [[unlikely]] {
             error(errInternal, -1, "arbitraryTransformMask vertices values don't fit in an integer");
             return;
@@ -2858,7 +2849,7 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     xMax = imgCoordMungeUpperC(vx[0], glyphMode);
     yMin = imgCoordMungeLowerC(vy[0], glyphMode);
     yMax = imgCoordMungeUpperC(vy[0], glyphMode);
-    for (i = 1; i < 4; ++i) {
+    for (int i = 1; i < 4; ++i) {
         int t0 = imgCoordMungeLowerC(vx[i], glyphMode);
         if (t0 < xMin) {
             xMin = t0;
@@ -2925,19 +2916,19 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     }
 
     // compute the inverse transform (after scaling) matrix
-    r00 = mat[0] / scaledWidth;
-    r01 = mat[1] / scaledWidth;
-    r10 = mat[2] / scaledHeight;
-    r11 = mat[3] / scaledHeight;
-    det = r00 * r11 - r01 * r10;
+    const double r00 = mat[0] / scaledWidth;
+    const double r01 = mat[1] / scaledWidth;
+    const double r10 = mat[2] / scaledHeight;
+    const double r11 = mat[3] / scaledHeight;
+    const double det = r00 * r11 - r01 * r10;
     if (splashAbs(det) < 1e-6) {
         // this should be caught by the singular matrix check in fillImageMask
         return;
     }
-    ir00 = r11 / det;
-    ir01 = -r01 / det;
-    ir10 = -r10 / det;
-    ir11 = r00 / det;
+    const double ir00 = r11 / det;
+    const double ir01 = -r01 / det;
+    const double ir10 = -r10 / det;
+    const double ir11 = r00 / det;
 
     // scale the input image
     const std::unique_ptr<SplashBitmap> scaledMask = scaleMask(src, srcData, srcWidth, srcHeight, scaledWidth, scaledHeight);
@@ -2947,74 +2938,74 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     }
 
     // construct the three sections
-    i = (vy[2] <= vy[3]) ? 2 : 3;
-    if (vy[1] <= vy[i]) {
-        i = 1;
+    int vertexIndex = (vy[2] <= vy[3]) ? 2 : 3;
+    if (vy[1] <= vy[vertexIndex]) {
+        vertexIndex = 1;
     }
-    if (vy[0] < vy[i] || (i != 3 && vy[0] == vy[i])) {
-        i = 0;
+    if (vy[0] < vy[vertexIndex] || (vertexIndex != 3 && vy[0] == vy[vertexIndex])) {
+        vertexIndex = 0;
     }
-    if (vy[i] == vy[(i + 1) & 3]) {
-        section[0].y0 = imgCoordMungeLowerC(vy[i], glyphMode);
-        section[0].y1 = imgCoordMungeUpperC(vy[(i + 2) & 3], glyphMode) - 1;
-        if (vx[i] < vx[(i + 1) & 3]) {
-            section[0].ia0 = i;
-            section[0].ia1 = (i + 3) & 3;
-            section[0].ib0 = (i + 1) & 3;
-            section[0].ib1 = (i + 2) & 3;
+    if (vy[vertexIndex] == vy[(vertexIndex + 1) & 3]) {
+        section[0].y0 = imgCoordMungeLowerC(vy[vertexIndex], glyphMode);
+        section[0].y1 = imgCoordMungeUpperC(vy[(vertexIndex + 2) & 3], glyphMode) - 1;
+        if (vx[vertexIndex] < vx[(vertexIndex + 1) & 3]) {
+            section[0].ia0 = vertexIndex;
+            section[0].ia1 = (vertexIndex + 3) & 3;
+            section[0].ib0 = (vertexIndex + 1) & 3;
+            section[0].ib1 = (vertexIndex + 2) & 3;
         } else {
-            section[0].ia0 = (i + 1) & 3;
-            section[0].ia1 = (i + 2) & 3;
-            section[0].ib0 = i;
-            section[0].ib1 = (i + 3) & 3;
+            section[0].ia0 = (vertexIndex + 1) & 3;
+            section[0].ia1 = (vertexIndex + 2) & 3;
+            section[0].ib0 = vertexIndex;
+            section[0].ib1 = (vertexIndex + 3) & 3;
         }
         nSections = 1;
     } else {
-        section[0].y0 = imgCoordMungeLowerC(vy[i], glyphMode);
-        section[2].y1 = imgCoordMungeUpperC(vy[(i + 2) & 3], glyphMode) - 1;
-        section[0].ia0 = section[0].ib0 = i;
-        section[2].ia1 = section[2].ib1 = (i + 2) & 3;
-        if (vx[(i + 1) & 3] < vx[(i + 3) & 3]) {
-            section[0].ia1 = section[2].ia0 = (i + 1) & 3;
-            section[0].ib1 = section[2].ib0 = (i + 3) & 3;
+        section[0].y0 = imgCoordMungeLowerC(vy[vertexIndex], glyphMode);
+        section[2].y1 = imgCoordMungeUpperC(vy[(vertexIndex + 2) & 3], glyphMode) - 1;
+        section[0].ia0 = section[0].ib0 = vertexIndex;
+        section[2].ia1 = section[2].ib1 = (vertexIndex + 2) & 3;
+        if (vx[(vertexIndex + 1) & 3] < vx[(vertexIndex + 3) & 3]) {
+            section[0].ia1 = section[2].ia0 = (vertexIndex + 1) & 3;
+            section[0].ib1 = section[2].ib0 = (vertexIndex + 3) & 3;
         } else {
-            section[0].ia1 = section[2].ia0 = (i + 3) & 3;
-            section[0].ib1 = section[2].ib0 = (i + 1) & 3;
+            section[0].ia1 = section[2].ia0 = (vertexIndex + 3) & 3;
+            section[0].ib1 = section[2].ib0 = (vertexIndex + 1) & 3;
         }
-        if (vy[(i + 1) & 3] < vy[(i + 3) & 3]) {
-            section[1].y0 = imgCoordMungeLowerC(vy[(i + 1) & 3], glyphMode);
-            section[2].y0 = imgCoordMungeUpperC(vy[(i + 3) & 3], glyphMode);
-            if (vx[(i + 1) & 3] < vx[(i + 3) & 3]) {
-                section[1].ia0 = (i + 1) & 3;
-                section[1].ia1 = (i + 2) & 3;
-                section[1].ib0 = i;
-                section[1].ib1 = (i + 3) & 3;
+        if (vy[(vertexIndex + 1) & 3] < vy[(vertexIndex + 3) & 3]) {
+            section[1].y0 = imgCoordMungeLowerC(vy[(vertexIndex + 1) & 3], glyphMode);
+            section[2].y0 = imgCoordMungeUpperC(vy[(vertexIndex + 3) & 3], glyphMode);
+            if (vx[(vertexIndex + 1) & 3] < vx[(vertexIndex + 3) & 3]) {
+                section[1].ia0 = (vertexIndex + 1) & 3;
+                section[1].ia1 = (vertexIndex + 2) & 3;
+                section[1].ib0 = vertexIndex;
+                section[1].ib1 = (vertexIndex + 3) & 3;
             } else {
-                section[1].ia0 = i;
-                section[1].ia1 = (i + 3) & 3;
-                section[1].ib0 = (i + 1) & 3;
-                section[1].ib1 = (i + 2) & 3;
+                section[1].ia0 = vertexIndex;
+                section[1].ia1 = (vertexIndex + 3) & 3;
+                section[1].ib0 = (vertexIndex + 1) & 3;
+                section[1].ib1 = (vertexIndex + 2) & 3;
             }
         } else {
-            section[1].y0 = imgCoordMungeLowerC(vy[(i + 3) & 3], glyphMode);
-            section[2].y0 = imgCoordMungeUpperC(vy[(i + 1) & 3], glyphMode);
-            if (vx[(i + 1) & 3] < vx[(i + 3) & 3]) {
-                section[1].ia0 = i;
-                section[1].ia1 = (i + 1) & 3;
-                section[1].ib0 = (i + 3) & 3;
-                section[1].ib1 = (i + 2) & 3;
+            section[1].y0 = imgCoordMungeLowerC(vy[(vertexIndex + 3) & 3], glyphMode);
+            section[2].y0 = imgCoordMungeUpperC(vy[(vertexIndex + 1) & 3], glyphMode);
+            if (vx[(vertexIndex + 1) & 3] < vx[(vertexIndex + 3) & 3]) {
+                section[1].ia0 = vertexIndex;
+                section[1].ia1 = (vertexIndex + 1) & 3;
+                section[1].ib0 = (vertexIndex + 3) & 3;
+                section[1].ib1 = (vertexIndex + 2) & 3;
             } else {
-                section[1].ia0 = (i + 3) & 3;
-                section[1].ia1 = (i + 2) & 3;
-                section[1].ib0 = i;
-                section[1].ib1 = (i + 1) & 3;
+                section[1].ia0 = (vertexIndex + 3) & 3;
+                section[1].ia1 = (vertexIndex + 2) & 3;
+                section[1].ib0 = vertexIndex;
+                section[1].ib1 = (vertexIndex + 1) & 3;
             }
         }
         section[0].y1 = section[1].y0 - 1;
         section[1].y1 = section[2].y0 - 1;
         nSections = 3;
     }
-    for (i = 0; i < nSections; ++i) {
+    for (int i = 0; i < nSections; ++i) {
         section[i].xa0 = vx[section[i].ia0];
         section[i].ya0 = vy[section[i].ia0];
         section[i].xa1 = vx[section[i].ia1];
@@ -3047,10 +3038,10 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
     }
 
     // scan all pixels inside the target region
-    for (i = 0; i < nSections; ++i) {
-        for (y = section[i].y0; y <= section[i].y1; ++y) {
-            xa = imgCoordMungeLowerC(section[i].xa0 + (static_cast<double>(y) + 0.5 - section[i].ya0) * section[i].dxdya, glyphMode);
-            xb = imgCoordMungeUpperC(section[i].xb0 + (static_cast<double>(y) + 0.5 - section[i].yb0) * section[i].dxdyb, glyphMode);
+    for (int i = 0; i < nSections; ++i) {
+        for (int y = section[i].y0; y <= section[i].y1; ++y) {
+            int xa = imgCoordMungeLowerC(section[i].xa0 + (static_cast<double>(y) + 0.5 - section[i].ya0) * section[i].dxdya, glyphMode);
+            int xb = imgCoordMungeUpperC(section[i].xb0 + (static_cast<double>(y) + 0.5 - section[i].yb0) * section[i].dxdyb, glyphMode);
             if (xa < 0) [[unlikely]] {
                 xa = 0;
             }
@@ -3063,10 +3054,10 @@ void Splash::arbitraryTransformMask(SplashImageMaskSource src, void *srcData, in
             } else {
                 clipRes2 = clipRes;
             }
-            for (x = xa; x < xb; ++x) {
+            for (int x = xa; x < xb; ++x) {
                 // map (x+0.5, y+0.5) back to the scaled image
-                xx = splashFloor((static_cast<double>(x) + 0.5 - mat[4]) * ir00 + (static_cast<double>(y) + 0.5 - mat[5]) * ir10);
-                yy = splashFloor((static_cast<double>(x) + 0.5 - mat[4]) * ir01 + (static_cast<double>(y) + 0.5 - mat[5]) * ir11);
+                int xx = splashFloor((static_cast<double>(x) + 0.5 - mat[4]) * ir00 + (static_cast<double>(y) + 0.5 - mat[5]) * ir10);
+                int yy = splashFloor((static_cast<double>(x) + 0.5 - mat[4]) * ir01 + (static_cast<double>(y) + 0.5 - mat[5]) * ir11);
                 // xx should always be within bounds, but floating point
                 // inaccuracy can cause problems
                 if (xx < 0) [[unlikely]] {

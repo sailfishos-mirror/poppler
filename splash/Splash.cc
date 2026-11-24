@@ -2780,8 +2780,10 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
         const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
-            const int scaledWidth = x1 - x0;
-            const int scaledHeight = y1 - y0;
+            int scaledWidth, scaledHeight;
+            if (checkedSubtraction(x1, x0, &scaledWidth) || checkedSubtraction(y1, y0, &scaledHeight)) {
+                return SplashError::BadArg;
+            }
             const int yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;
@@ -2806,8 +2808,10 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData, int 
         const SplashClipResult clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1);
         opClipRes = clipRes;
         if (clipRes != splashClipAllOutside) {
-            const int scaledWidth = x1 - x0;
-            const int scaledHeight = y1 - y0;
+            int scaledWidth, scaledHeight;
+            if (checkedSubtraction(x1, x0, &scaledWidth) || checkedSubtraction(y1, y0, &scaledHeight)) {
+                return SplashError::BadArg;
+            }
             const int yp = h / scaledHeight;
             if (yp < 0 || yp > INT_MAX - 1) {
                 return SplashError::BadArg;

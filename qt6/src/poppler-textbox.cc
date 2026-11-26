@@ -60,4 +60,9 @@ bool TextBox::hasSpaceAfter() const
     return m_data->hasSpaceAfter;
 }
 
+TextBox::Rotation TextBox::rotation() const
+{
+    return m_data->rotation;
+}
+
 }

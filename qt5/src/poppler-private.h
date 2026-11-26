@@ -249,6 +249,7 @@ public:
     TextBox *nextWord = nullptr;
     QVector<QRectF> charBBoxes; // the boundingRect of each character
     bool hasSpaceAfter = false;
+    TextBox::Rotation rotation = TextBox::Rotate0;
 };
 
 inline Poppler::ErrorStringType fromPopplerCore(::ErrorStringType type)

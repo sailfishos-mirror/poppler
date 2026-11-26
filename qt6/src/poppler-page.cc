@@ -778,6 +778,7 @@ std::vector<std::unique_ptr<TextBox>> Page::textList(Rotation rotate, ShouldAbor
 
         auto text_box = std::make_unique<TextBox>(string, QRectF(xMin, yMin, xMax - xMin, yMax - yMin));
         text_box->m_data->hasSpaceAfter = word->hasSpaceAfter();
+        text_box->m_data->rotation = static_cast<TextBox::Rotation>(word->getRotation());
         text_box->m_data->charBBoxes.reserve(word->getLength());
         for (int j = 0; j < word->getLength(); ++j) {
             word->getCharBBox(j, &xMin, &yMin, &xMax, &yMax);

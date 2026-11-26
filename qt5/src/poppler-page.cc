@@ -802,6 +802,7 @@ QList<TextBox *> Page::textList(Rotation rotate, ShouldAbortQueryFunc shouldAbor
 
         auto *text_box = new TextBox(string, QRectF(xMin, yMin, xMax - xMin, yMax - yMin));
         text_box->m_data->hasSpaceAfter = word->hasSpaceAfter();
+        text_box->m_data->rotation = static_cast<TextBox::Rotation>(word->getRotation());
         text_box->m_data->charBBoxes.reserve(word->getLength());
         for (int j = 0; j < word->getLength(); ++j) {
             word->getCharBBox(j, &xMin, &yMin, &xMax, &yMax);

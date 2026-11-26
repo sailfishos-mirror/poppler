@@ -126,6 +126,19 @@ class POPPLER_QT6_EXPORT TextBox
 
 public:
     /**
+        Describes the rotation of the text.
+
+        \since 26.12.0
+    */
+    enum Rotation
+    {
+        Rotate0 = 0,
+        Rotate90 = 1,
+        Rotate180 = 2,
+        Rotate270 = 3
+    };
+
+    /**
        The default constructor sets the \p text and the rectangle that
        contains the text. Coordinates for the \p bBox are in points =
        1/72 of an inch.
@@ -163,6 +176,13 @@ public:
         Returns whether there is a space character after this text box
     */
     bool hasSpaceAfter() const;
+
+    /**
+        Returns the rotation of the text.
+
+        \since 26.12.0
+    */
+    Rotation rotation() const;
 
 private:
     Q_DISABLE_COPY(TextBox)

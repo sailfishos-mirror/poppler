@@ -1,4 +1,4 @@
-image: debian:unstable
+image: debian:${DEBIAN_VERSION}
 
 stages:
   - build
@@ -6,7 +6,7 @@ stages:
   - publish
 
 before_script:
-  - echo 'deb-src http://deb.debian.org/debian unstable main' >> /etc/apt/sources.list
+  - echo "deb-src http://deb.debian.org/debian ${DEBIAN_VERSION} main" >> /etc/apt/sources.list
   - apt-get update
   - echo "Installing tpm-udev workarounds a debian breakage"
   - apt-get install --yes tpm-udev
@@ -16,6 +16,7 @@ before_script:
   - locale-gen
 
 variables:
+  DEBIAN_VERSION: unstable
   LANG: en_US.UTF-8
   LANGUAGE: en_US:en
   LC_ALL: en_US.UTF-8
@@ -52,7 +53,8 @@ build:
 
 build_clang19_libcpp_cmake328:
   stage: build
-  image: debian:trixie
+  variables:
+    DEBIAN_VERSION: trixie
   script:
     - echo "This is to simulate xcode that can run macos 15 which is the minimum macos version we support"
     - git clone --branch ${CI_COMMIT_REF_NAME} --depth 1 ${TEST_DATA_URL} test-data || git clone --depth 1 ${UPSTREAM_TEST_DATA_URL} test-data

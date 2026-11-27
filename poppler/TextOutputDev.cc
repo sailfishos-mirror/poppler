@@ -4132,7 +4132,12 @@ bool TextPage::findText(const Unicode *s, int len, bool startAtTop, bool stopAtB
                                         }
 
                                         if (continueMatch) {
-                                            adjustRotation(nextline, 0, n, &xMin2, &xMax2, &yMin2, &yMax2);
+                                            const int *idx = ignoreDiacritics ? nextline->ascii_idx : nextline->normalized_idx;
+                                            int nextEnd = idx[n];
+                                            for (int l = 0; l < n; ++l) {
+                                                nextEnd = std::max(nextEnd, idx[l] + 1);
+                                            }
+                                            adjustRotation(nextline, 0, nextEnd, &xMin2, &xMax2, &yMin2, &yMax2);
                                             continueMatch->x1 = xMin2;
                                             continueMatch->y1 = yMax2;
                                             continueMatch->x2 = xMax2;
